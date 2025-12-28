@@ -55,6 +55,7 @@ func _sum_goal(accum: float, window: WindowData) -> float:
     return accum+window.goal
 
 func _sort_min_demand(left: WindowData, right: WindowData, demands:Dictionary) -> bool:
+    #possbile crash source if demands does not have such key
     return demands[left] < demands[right]
 
 var zero_demands: int = 0

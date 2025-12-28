@@ -1,13 +1,11 @@
-[gd_scene load_steps=9 format=3 uid="uid://wocawew6ut7h"]
+[gd_scene load_steps=7 format=3 uid="uid://wocawew6ut7h"]
 
 [ext_resource type="PackedScene" uid="uid://b46qouyu3lx2m" path="res://scenes/windows/window_base.tscn" id="1_4h3qf"]
 [ext_resource type="Script" uid="uid://bu87cvibfboil" path="res://mods-unpacked/kuuk-SmartThreadManager/scenes/windows/window_smart_thread_manager.gd" id="2_seswn"]
 [ext_resource type="Texture2D" uid="uid://mbrbl6fxx1" path="res://textures/icons/brain.png" id="3_jjcgv"]
 [ext_resource type="PackedScene" uid="uid://co5icrrrwscgg" path="res://scenes/input_container.tscn" id="4_2prua"]
 [ext_resource type="Script" uid="uid://b66hxrx7s10dt" path="res://mods-unpacked/kuuk-SmartThreadManager/scripts/smart_resource_container.gd" id="5_3qqw1"]
-[ext_resource type="Script" uid="uid://dk8e43a0hr5tb" path="res://scripts/resource_button.gd" id="6_seswn"]
-[ext_resource type="Script" uid="uid://brteo5ih45380" path="res://scripts/themed_icon.gd" id="7_3qqw1"]
-[ext_resource type="PackedScene" uid="uid://b7m6072sbijyd" path="res://scenes/output_connector.tscn" id="8_xeqvc"]
+[ext_resource type="PackedScene" uid="uid://b4efojcll7i7" path="res://scenes/output_container.tscn" id="5_lcoeh"]
 
 [node name="WindowBase" instance=ExtResource("1_4h3qf")]
 offset_bottom = 50.0
@@ -29,7 +27,7 @@ theme_override_constants/separation = 10
 layout_mode = 2
 default_resource = "clock_speed"
 limit = -1.0
-exporting = [null]
+exporting = [NodePath("../Output0/ResourceContainer")]
 
 [node name="Progress" type="VBoxContainer" parent="PanelContainer/MainContainer" index="1"]
 layout_mode = 2
@@ -63,72 +61,13 @@ show_percentage = false
 
 [node name="Output0" type="HBoxContainer" parent="PanelContainer/MainContainer" index="2"]
 layout_mode = 2
-
-[node name="ResourceContainer" type="Control" parent="PanelContainer/MainContainer/Output0" index="0" groups=["output", "persistent_container"]]
-custom_minimum_size = Vector2(0, 60)
-layout_mode = 2
-size_flags_horizontal = 3
 mouse_filter = 2
+theme_override_constants/separation = 5
+
+[node name="ResourceContainer" parent="PanelContainer/MainContainer/Output0" index="0" instance=ExtResource("5_lcoeh")]
+layout_mode = 2
 script = ExtResource("5_3qqw1")
 default_resource = "clock_speed"
 limit = -1.0
 
-[node name="ResourceButton" type="Button" parent="PanelContainer/MainContainer/Output0/ResourceContainer" index="0"]
-custom_minimum_size = Vector2(60, 60)
-layout_mode = 0
-offset_right = 54.0
-offset_bottom = 54.0
-size_flags_horizontal = 4
-size_flags_vertical = 4
-focus_mode = 0
-theme_type_variation = &"ItemButton"
-toggle_mode = true
-button_mask = 0
-expand_icon = true
-script = ExtResource("6_seswn")
-
-[node name="Icon" type="TextureRect" parent="PanelContainer/MainContainer/Output0/ResourceContainer/ResourceButton" index="0"]
-self_modulate = Color(0.567, 0.69465, 0.9, 1)
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 10.0
-offset_top = 10.0
-offset_right = -10.0
-offset_bottom = -10.0
-grow_horizontal = 2
-grow_vertical = 2
-pivot_offset = Vector2(20, 20)
-expand_mode = 1
-script = ExtResource("7_3qqw1")
-
-[node name="Info" type="VBoxContainer" parent="PanelContainer/MainContainer/Output0/ResourceContainer" index="1"]
-layout_mode = 0
-offset_left = 70.0
-offset_right = 294.0
-offset_bottom = 60.0
-size_flags_horizontal = 3
-mouse_filter = 2
-theme_override_constants/separation = -2
-alignment = 1
-
-[node name="Name" type="Label" parent="PanelContainer/MainContainer/Output0/ResourceContainer/Info" index="0"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 22
-text = "empty"
-text_overrun_behavior = 3
-
-[node name="Count" type="Label" parent="PanelContainer/MainContainer/Output0/ResourceContainer/Info" index="1"]
-auto_translate_mode = 2
-layout_mode = 2
-theme_type_variation = &"SubLabel"
-theme_override_font_sizes/font_size = 20
-text = "0"
-
-[node name="OutputConnector" parent="PanelContainer/MainContainer/Output0/ResourceContainer" index="2" instance=ExtResource("8_xeqvc")]
-layout_mode = 1
-
 [connection signal="resource_set" from="PanelContainer/MainContainer/Input" to="." method="_on_input_resource_set"]
-
-[editable path="PanelContainer/MainContainer/Output0/ResourceContainer/OutputConnector"]

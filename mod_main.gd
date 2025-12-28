@@ -25,7 +25,7 @@ func _init() -> void:
     ModLoaderMod.add_translation(translations_dir_path.path_join("SmartThreadManager.en.translation"))
     
     ModLoaderLog.success("Initialized", LOG_NAME)
-	ModLoaderLog.info("Mod version: 1.0.4", LOG_NAME)
+    ModLoaderLog.info("Mod version: 1.0.4", LOG_NAME)
 
     
 

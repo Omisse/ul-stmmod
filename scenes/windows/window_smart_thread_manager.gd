@@ -7,11 +7,6 @@ extends WindowIndexed
 @onready var percent_label = $PanelContainer / MainContainer / Progress / ProgressContainer / PercentLabel
 
 
-#func _ready() -> void :
-#    super()
-#    output.set_resource(input.resource)
-
-
 func process(delta: float) -> void :
     output.count = input.count
     var progress_value = input.count / output.demand if !is_zero_approx(output.demand) else 0.0
@@ -20,11 +15,11 @@ func process(delta: float) -> void :
     percent_label.text = Utils.print_string(100.0*progress_value, false)+"%"
     
     
-
 # Remains of the base code, never seen it being called
 func _on_input_resource_set() -> void :
     output.set_resource(input.resource)
     ModLoaderLog.debug("Resource set", "kuuk-SmartThreadManager:window_smart_thread_manager")
+
 
 func export() -> Dictionary:
     var dict = super()
