@@ -1,0 +1,17 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://de033ffuli3al"
+
+[deps]
+
+files=["res://mods-unpacked/kuuk-SmartThreadManager/translations/SmartThreadManager.en.translation"]
+
+source_file="res://mods-unpacked/kuuk-SmartThreadManager/translations/SmartThreadManager.csv"
+dest_files=["res://mods-unpacked/kuuk-SmartThreadManager/translations/SmartThreadManager.en.translation"]
+
+[params]
+
+compress=true
+delimiter=0

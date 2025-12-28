@@ -1,0 +1,37 @@
+{
+	"dependencies": [],
+	"description": "Solves not so difficult problems using the power of math, magic and your frametime.\n\nSimply connect any amount of nodes to the output and wait until demand stabilizes.\nIf it's less than 100% - we need more CPU!\n100% - you're magnificent!\n100+% - maybe, its just reserve for future upgrades, or you're just wasting this precious CPU clocks.",
+	"extra": {
+		"godot": {
+			"authors": [
+				"kuuk"
+			],
+			"compatible_game_version": [
+				"2.0.0",
+				"2.0.17",
+				"2.0.19"
+			],
+			"compatible_mod_loader_version": [
+				"7.0.0",
+				"7.0.1"
+			],
+			"config_schema": {
+
+			},
+			"description_rich": "",
+			"image": null,
+			"incompatibilities": [],
+			"load_before": [],
+			"optional_dependencies": [],
+			"tags": [
+				"gameplay",
+				"qol",
+				"beta"
+			]
+		}
+	},
+	"name": "SmartThreadManager",
+	"namespace": "kuuk",
+	"version_number": "1.0.3",
+	"website_url": ""
+}

@@ -1,0 +1,4 @@
+key,en
+window_smart_thread_manager,Smart Thread Manager
+window_stm_desc,"Uneven distributor that prioritizes clock-consumers over synchronizers and processing sellers."
+MODNAME_READY_TEXT,"Smart Thread Manager - Get Ready to suffer from insane lagspikes."
