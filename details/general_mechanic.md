@@ -1,13 +1,13 @@
 ## Before 1.0.4:
-  Let's say, we need some files per operation (especially with Movie Makers)
+ - Let's say, we need some files per operation (especially with Movie Makers)
   
-  We have some input of such files on the node
-  Operation costs some CPU clocks
+ - We have some input of such files on the node
+ - Operation costs some CPU clocks
   
-  Our target - current_input*operation_cost
+ - Our target - current_input*operation_cost
   
-  If the node isn't a consumer, it will only receive leftovers
-  If there's not enough CPU clock to satisfy all demand, we will multiply our target by supply/demand ratio (hardcoded to never be more than x1.0)
+ - If the node isn't a consumer, it will only receive leftovers
+ - If there's not enough CPU clock to satisfy all demand, we will multiply our target by supply/demand ratio (hardcoded to never be more than x1.0)
 
 ## 1.0.4+
 
