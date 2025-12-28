@@ -25,7 +25,10 @@ func _init() -> void:
     ModLoaderMod.add_translation(translations_dir_path.path_join("SmartThreadManager.en.translation"))
     
     ModLoaderLog.success("Initialized", LOG_NAME)
-    ModLoaderLog.info("Mod version: 1.0.4", LOG_NAME)
+    
+    var version = JSON.parse_string(FileAccess.get_file_as_string(mod_dir_path+"/manifest.json")).version_number
+    if version != null:
+        ModLoaderLog.info("Mod version: %s" % version, LOG_NAME)
 
     
 

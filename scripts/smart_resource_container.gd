@@ -74,18 +74,18 @@ func tick() -> void :
     demand = targets.reduce(func(accum: float, window: WindowData) -> float: return accum+demands[window], 0.0)
     var main_ratio = clampf(count/demand, 0.0, 1.0) if !is_zero_approx(demand) else clampf(count, 0.0, 1.0)
     
-    if demand <= remaining:
+    if demand < remaining:
         #distribute as much as needed
         for target:WindowData in targets:
             target.set_count(demands[target])
             remaining -= demands[target]
             
     elif !is_zero_approx(demand):
-        #targets.filter(func(t: WindowData): return t.goal > 0)
-        targets.sort_custom(_sort_min_demand.bind(demands))
+        var consumers = targets.filter(func(t: WindowData): return t.goal > 0)
+        consumers.sort_custom(_sort_min_demand.bind(demands))
         var current_zeroes = demands.values().reduce(func(acc, val): return acc+int(is_zero_approx(val)), 0)
         var current = 0
-        for target:WindowData in targets:
+        for target:WindowData in consumers:
             var target_amount = demands[target]
             if current_zeroes == zero_demands:
                 #faster stabilization
@@ -94,15 +94,16 @@ func tick() -> void :
                 target_amount = 0.5*(target_amount+old_demands[target])
             var amount = min(target_amount, remaining)
             if amount == remaining:
-                amount /= targets.size()-current
+                amount /= consumers.size()-current
             target.set_count(amount)
             old_demands[target] = amount
             remaining -= amount
             current += 1
+        remaining = 0.0
         zero_demands = current_zeroes             
         
     #even distribution between other connections
-    if !is_zero_approx(remaining) && targets.size() > 0:
+    if targets.size() > 0:
         targets = targets.filter(func(wd:WindowData): return is_zero_approx(wd.goal))
         var connections: int = 0
         for target:WindowData in targets:
