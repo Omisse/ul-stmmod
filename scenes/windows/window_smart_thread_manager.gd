@@ -7,9 +7,9 @@ extends WindowIndexed
 @onready var percent_label = $PanelContainer / MainContainer / Progress / ProgressContainer / PercentLabel
 
 
-func _ready() -> void :
-    super()
-    output.set_resource(input.resource)
+#func _ready() -> void :
+#    super()
+#    output.set_resource(input.resource)
 
 
 func process(delta: float) -> void :

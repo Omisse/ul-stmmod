@@ -14,21 +14,21 @@ var windows_dir_path := ""
 
 
 func _init() -> void:    
-    ModLoaderLog.info("Initializing...", LOG_NAME)
-    
     mod_dir_path = ModLoaderMod.get_unpacked_dir().path_join(MOD_DIR)
     extensions_dir_path = mod_dir_path.path_join("extensions")
     windows_dir_path = "../../"+mod_dir_path.trim_prefix("res://").path_join("scenes/windows")
     
     # Add extensions
-    #install_script_extensions()
-    #install_script_hook_files()
 
     # Add translations    
     translations_dir_path = mod_dir_path.path_join("translations")
     ModLoaderMod.add_translation(translations_dir_path.path_join("SmartThreadManager.en.translation"))
     
-    ModLoaderLog.success("Initialized.", LOG_NAME)
+    ModLoaderLog.success("Initialized", LOG_NAME)
+	ModLoaderLog.info("Mod version: 1.0.4", LOG_NAME)
+
+    
+
     
 func _ready() -> void:
     if !has_node("/root/Data"):
@@ -37,8 +37,7 @@ func _ready() -> void:
     _add_to_data()    
     
     # literally no one asked for this
-    ModLoaderLog.info("Translation Demo: " + tr("MODNAME_READY_TEXT"), LOG_NAME)
-    
+    # ModLoaderLog.info("Translation Demo: " + tr("MODNAME_READY_TEXT"), LOG_NAME)
     ModLoaderLog.info("Ready", LOG_NAME)
 
 func _add_to_data() -> void:
