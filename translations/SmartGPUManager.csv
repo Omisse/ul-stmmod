@@ -1,0 +1,4 @@
+key,en
+window_smart_gpu_manager,Smart GPU Manager
+window_sgm_desc,"Uneven distributor with demand-based allocation logic"
+sgm_main_ready,"Smart GPU Manager - My CPU bro is much smarter than this"
