@@ -1,0 +1,17 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://c35n0cj5xkay0"
+
+[deps]
+
+files=["res://mods-unpacked/kuuk-SmartGPUManager/translations/SmartGPUManager.en.translation"]
+
+source_file="res://mods-unpacked/kuuk-SmartGPUManager/translations/SmartGPUManager.csv"
+dest_files=["res://mods-unpacked/kuuk-SmartGPUManager/translations/SmartGPUManager.en.translation"]
+
+[params]
+
+compress=true
+delimiter=0
