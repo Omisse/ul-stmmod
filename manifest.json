@@ -1,6 +1,6 @@
 {
 	"dependencies": [],
-	"description": "Smart resource distributor, CPU speed version. Bar in the middle shows current supply/demand ratio",
+	"description": "Demand-based distributor for CPU speed with improved logic",
 	"extra": {
 		"godot": {
 			"authors": [
@@ -9,7 +9,8 @@
 			"compatible_game_version": [
 				"2.0.0",
 				"2.0.17",
-				"2.0.19"
+				"2.0.19",
+				"2.0.20"
 			],
 			"compatible_mod_loader_version": [
 				"7.0.0",
@@ -25,13 +26,12 @@
 			"optional_dependencies": [],
 			"tags": [
 				"gameplay",
-				"qol",
-				"beta"
+				"qol"
 			]
 		}
 	},
 	"name": "SmartThreadManager",
 	"namespace": "kuuk",
-	"version_number": "1.0.6",
-	"website_url": ""
+	"version_number": "1.0.7",
+	"website_url": "https://github.com/Omisse/ul-stmmod"
 }
