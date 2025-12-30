@@ -18,8 +18,6 @@ func _init() -> void:
     extensions_dir_path = mod_dir_path.path_join("extensions")
     windows_dir_path = "../../"+mod_dir_path.trim_prefix("res://").path_join("scenes/windows")
     
-    # Add extensions
-
     # Add translations    
     translations_dir_path = mod_dir_path.path_join("translations")
     ModLoaderMod.add_translation(translations_dir_path.path_join("SmartThreadManager.en.translation"))

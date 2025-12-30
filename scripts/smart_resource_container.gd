@@ -4,6 +4,12 @@ var demand: float = 0.0
 var window_binds: Dictionary[WindowBase, WindowData]
 var old_demands: Dictionary = {}
 
+var consumers: Array[WindowData] = []
+var zero_demands: int = 0
+
+var storages: Array[WindowData] = []
+var storage_connections: int = 0
+
 func _ready() -> void:
     super()
     Signals.new_upgrade.connect(_on_new_upgrade)
@@ -15,6 +21,7 @@ func _on_new_upgrade() -> void:
 func update_connections() -> void:
     super()
     _bind_windows(transfer)
+    _filter_windows()
     _cleanup_demands()
     if (!should_tick()): tick()
 
@@ -37,6 +44,16 @@ func _bind_windows(target_inputs: Array[ResourceContainer]):
     for d: WindowData in window_binds.values():
         d.refill_sources(target_inputs)
         d.update()
+
+func _filter_windows():
+    consumers = window_binds.values().filter(func(w): return w.goal > 0)
+    storages = window_binds.values().filter(func(w): return is_zero_approx(w.goal))
+    storage_connections = storages.reduce(func(acc,w): return acc+w.own_sources.size(), 0)
+        
+func _cleanup_demands():
+    var erase_keys = old_demands.keys().filter(func(key): return !window_binds.values().has(key))
+    for key in erase_keys:
+        old_demands.erase(key)
         
 func _get_parent_window(n: Node) -> WindowBase:
     if !n.has_meta("parent_window"):
@@ -45,20 +62,11 @@ func _get_parent_window(n: Node) -> WindowBase:
             window = window.get_parent()
         n.set_meta("parent_window", window)
     return n.get_meta("parent_window", null)
-    
-func _cleanup_demands():
-    var erase_keys = old_demands.keys().filter(func(key): return !window_binds.values().has(key))
-    for key in erase_keys:
-        old_demands.erase(key)
-        
-func _sum_goal(accum: float, window: WindowData) -> float:
-    return accum+window.goal
 
 func _sort_min_demand(left: WindowData, right: WindowData, demands:Dictionary) -> bool:
     #possbile crash source if demands does not have such key
     return demands[left] < demands[right]
 
-var zero_demands: int = 0
 
 func tick() -> void :
     #vanilla
@@ -69,52 +77,51 @@ func tick() -> void :
     var targets = window_binds.values()    
     
     var demands: Dictionary = {}
+    
     for target:WindowData in targets:
         demands[target] = target.get_demand()
     demand = targets.reduce(func(accum: float, window: WindowData) -> float: return accum+demands[window], 0.0)
-    var main_ratio = clampf(count/demand, 0.0, 1.0) if !is_zero_approx(demand) else clampf(count, 0.0, 1.0)
-    
-    if demand < remaining:
-        #distribute as much as needed
-        for target:WindowData in targets:
-            target.set_count(demands[target])
-            remaining -= demands[target]
-            
-    elif !is_zero_approx(demand):
-        var consumers = targets.filter(func(t: WindowData): return t.goal > 0)
+                
+    if demand >= remaining:
+        #min_demand priority logic
         consumers.sort_custom(_sort_min_demand.bind(demands))
-        var current_zeroes = demands.values().reduce(func(acc, val): return acc+int(is_zero_approx(val)), 0)
-        var current = 0
-        for target:WindowData in consumers:
-            var target_amount = demands[target]
+        var current_zeroes = demands.values()\
+                .reduce(func(acc, val): return acc+int(is_zero_approx(val)), 0)
+        var pos = 0
+        for consumer:WindowData in consumers:
+            var target_amount = demands[consumer]
+            
+            #faster stabilization
             if current_zeroes == zero_demands:
-                #faster stabilization
-                if !old_demands.has(target):
-                    old_demands[target] = target_amount
-                target_amount = 0.5*(target_amount+old_demands[target])
+                if !old_demands.has(consumer):
+                    old_demands[consumer] = target_amount
+                target_amount = 0.5*(target_amount+old_demands[consumer])
+                
             var amount = min(target_amount, remaining)
             if amount == remaining:
-                amount /= consumers.size()-current
-            target.set_count(amount)
-            old_demands[target] = amount
+                amount /= consumers.size()-pos
+            consumer.set_count(amount)
+            old_demands[consumer] = amount
             remaining -= amount
-            current += 1
-        remaining = 0.0
-        zero_demands = current_zeroes             
-        
-    #even distribution between other connections
-    if targets.size() > 0:
-        targets = targets.filter(func(wd:WindowData): return is_zero_approx(wd.goal))
-        var connections: int = 0
-        for target:WindowData in targets:
-            connections += target.own_sources.size()
-        for target:WindowData in targets:
-            target.set_count(remaining*target.own_sources.size()/connections)
+            pos += 1
             
-
-
-
-
+        #due to floating-point precision limits, we may end up with negative values, almost zero compared to count.
+        remaining = 0.0    
+        zero_demands = current_zeroes
+        
+    else:
+        #simple demand logic
+        for consumer:WindowData in consumers:
+            consumer.set_count(demands[consumer])
+            remaining -= demands[consumer]
+            
+    #due to floating-point precision limits, we may end up with negative values, almost zero compared to count.
+    remaining = 0.0 if remaining < 0 else remaining
+    
+    #even distribution between other connections
+    #we always need to set their values
+    for storage: WindowData in storages:
+        storage.set_count(remaining*storage.own_sources.size()/storage_connections)
 
 
 
@@ -126,6 +133,11 @@ class WindowData extends Object:
     var inputs_filtered: Dictionary[ResourceContainer, InputContainerData]
     
     var own_sources: Array[ResourceContainer]
+    
+    func _init(window: WindowBase) -> void:
+        self.window = window
+        _refilter_inputs()
+    
     func add_source(container: ResourceContainer) -> void:
         if !own_sources.has(container):
             own_sources.append(container)
@@ -155,11 +167,6 @@ class WindowData extends Object:
         for key in inputs_filtered.keys():
             if !containers.has(key):
                 inputs_filtered.erase(key)
-        
-                        
-    func _init(window: WindowBase) -> void:
-        self.window = window
-        _refilter_inputs()
         
     
     func get_demand() -> float:
