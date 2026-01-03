@@ -22,7 +22,8 @@ func update_connections() -> void:
     super()
     _bind_windows(transfer)
     _filter_windows()
-    _cleanup_demands()
+    #_cleanup_demands()
+    old_demands.clear()
     if (!should_tick()): tick()
 
 func _bind_windows(target_inputs: Array[ResourceContainer]):
@@ -67,6 +68,17 @@ func _sort_min_demand(left: WindowData, right: WindowData, demands:Dictionary) -
     #possbile crash source if demands does not have such key
     return demands[left] < demands[right]
 
+func _sort_max_demand(left: WindowData, right: WindowData, demands:Dictionary) -> bool:
+    return demands[left] > demands[right]
+    
+func _sort_min_prod(left: WindowData, right:WindowData) -> bool:
+    return left._get_min_prod() < right._get_min_prod()
+    
+func _sort_complex(left: WindowData, right:WindowData, demands:Dictionary) -> bool:
+    var prod_left = left._get_min_prod()
+    var prod_right = right._get_min_prod()
+    return prod_left*demands[left] < prod_right*demands[right]
+    #return prod_left < prod_right || (is_equal_approx(prod_left, prod_right) && (demands[left] < demands[right]))
 
 func tick() -> void :
     #vanilla
@@ -81,49 +93,49 @@ func tick() -> void :
     for target:WindowData in targets:
         demands[target] = target.get_demand()
     demand = targets.reduce(func(accum: float, window: WindowData) -> float: return accum+demands[window], 0.0)
-                
-    if demand >= remaining:
-        #min_demand priority logic
-        consumers.sort_custom(_sort_min_demand.bind(demands))
-        var current_zeroes = demands.values()\
-                .reduce(func(acc, val): return acc+int(is_zero_approx(val)), 0)
-        var pos = 0
-        for consumer:WindowData in consumers:
-            var target_amount = demands[consumer]
-            
-            #faster stabilization
-            if current_zeroes == zero_demands:
-                if !old_demands.has(consumer):
-                    old_demands[consumer] = target_amount
-                target_amount = 0.5*(target_amount+old_demands[consumer])
-                
-            var amount = min(target_amount, remaining)
-            if amount == remaining:
-                amount /= consumers.size()-pos
-            consumer.set_count(amount)
-            old_demands[consumer] = amount
-            remaining -= amount
-            pos += 1
-            
-        #due to floating-point precision limits, we may end up with negative values, almost zero compared to count.
-        remaining = 0.0    
-        zero_demands = current_zeroes
-        
-    else:
-        #simple demand logic
-        for consumer:WindowData in consumers:
-            consumer.set_count(demands[consumer])
-            remaining -= demands[consumer]
-            
-    #due to floating-point precision limits, we may end up with negative values, almost zero compared to count.
-    remaining = 0.0 if remaining < 0 else remaining
     
-    #even distribution between other connections
-    #we always need to set their values
-    for storage: WindowData in storages:
-        storage.set_count(remaining*storage.own_sources.size()/storage_connections)
+    var windows = transfer.map(_get_parent_window)
+    var lines = _get_line_starters(self, windows).map(_get_line_connected.bind(windows))
+    lines.sort_custom(func(line_a, line_b): return line_a.size() < line_b.size())
+    lines = lines.map(func(l: Array[WindowBase]): return l.filter(func(w: WindowBase): return transfer.has))
+    var current_line = 0
+    for line:Array[WindowBase] in lines:
+        line.filter(func(wb: WindowBase):
+            
+            return 
+        )
+    
+    
+    
+    
 
-
+func _get_line_starters(source: ResourceContainer, windows: Array) -> Array[WindowBase]:
+    var result: Array[WindowBase] = []
+    for window:WindowBase in windows:
+        var remote_windows = window.containers\
+                .filter(func(c): return c.is_in_group("input"))\
+                .map(func(c:ResourceContainer): return _get_parent_window(c.input))\
+                .filter(func(w): return (_get_parent_window(source) != w) && !windows.has(w))
+        if remote_windows.size() > 0: result.append(window)
+    return result
+    
+func _get_line_connected(starter: WindowBase, windows: Array) -> Array[WindowBase]:
+    var result: Array[WindowBase] = [starter]
+    var valid_outputs = starter.containers\
+            .filter(func(c): return c.is_in_group("output"))\
+            .map(func(c:ResourceContainer): return c.outputs)
+    var flat_windows_array = []
+    for outputs in valid_outputs:
+        flat_windows_array.append_array(outputs.map(_get_parent_window))
+    
+    #that thing makes it so that the 'line' is only calculated for connected windows
+    #at the point of 2.0.21, we have things like trojans that are created by separate node
+    #yet the only place they fit is another part of the line, trojan injector
+    #flat_windows_array = flat_windows_array.filter(func(w): return windows.has(w))
+    
+    for window in flat_windows_array:
+        result.append_array(_get_line_connected(window, windows))
+    return result
 
 
 

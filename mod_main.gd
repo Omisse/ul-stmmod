@@ -27,11 +27,14 @@ func _init() -> void:
     var version = JSON.parse_string(FileAccess.get_file_as_string(mod_dir_path+"/manifest.json")).version_number
     if version != null:
         ModLoaderLog.info("Mod version: %s" % version, LOG_NAME)
+    
+    
 
     
 
     
 func _ready() -> void:
+    self.add_to_group("kuuk:STM")
     if !has_node("/root/Data"):
         ModLoaderLog.error("No data singleton found!", LOG_NAME)
         return
