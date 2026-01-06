@@ -95,17 +95,22 @@ func tick() -> void :
     demand = targets.reduce(func(accum: float, window: WindowData) -> float: return accum+demands[window], 0.0)
     
     var windows = transfer.map(_get_parent_window)
+    for window in windows:
+        pass
+        #_add_graph_node(window)
+    
     var lines = _get_line_starters(self, windows).map(_get_line_connected.bind(windows))
     lines.sort_custom(func(line_a, line_b): return line_a.size() < line_b.size())
     lines = lines.map(func(l: Array[WindowBase]): return l.filter(func(w: WindowBase): return transfer.has))
-    var current_line = 0
+    
+    #deduplication
     for line:Array[WindowBase] in lines:
-        line.filter(func(wb: WindowBase):
-            
-            return 
-        )
-    
-    
+        var other_lines = lines.duplicate()
+        other_lines.erase(line)
+        var other_windows_flat = []
+        for other_line in other_lines:
+            other_windows_flat.append_array(other_line)
+        line = line.filter(func(w:WindowBase): return !other_windows_flat.has(w))
     
     
 
@@ -137,6 +142,88 @@ func _get_line_connected(starter: WindowBase, windows: Array) -> Array[WindowBas
         result.append_array(_get_line_connected(window, windows))
     return result
 
+
+class WindowGraph extends Object:
+    var root: WindowNode = null
+    var names: Dictionary[String, Array] = {}
+    
+    func _init(window: WindowBase) -> void:
+        root = WindowNode.new(window)
+        _map_names(root)
+    
+    #i really do not like that thing, steps is dumb and hopeless
+    func _map_names(current: WindowNode, steps_done: Array[int] = []) -> void:
+        var window_name = current.window.name
+        if names.has(window_name): return
+        
+        #theoretically, no need to dupe that one
+        names[window_name] = steps_done
+        var steps_current = steps_done.duplicate()
+        var pos = steps_current.size()
+        steps_current.resize(pos+1)
+        steps_current[pos] = 0
+        for node: WindowNode in current.left:
+            steps_current[pos] -= 1
+            _map_names(node, steps_current.duplicate())
+        
+        steps_current[pos] = 0
+        for node: WindowNode in current.right:
+            steps_current[pos] += 1
+            _map_names(node, steps_current.duplicate())
+        
+    func _get_node_from_steps(steps: Array[int]) -> WindowNode:
+        var node = root
+        for step in steps:
+            var search = node.left if step < 0 else node.right
+            step = absi(step)-1
+            node = search[step]
+        return node
+
+    func _get_node_by_name(node_name: String) -> WindowNode:
+        if !names.has(node_name): return null
+        return _get_node_from_steps(names[node_name])
+    
+    class WindowNode extends Object:
+        var window: WindowBase = null
+        var left: Array[WindowNode] = []
+        var right: Array[WindowNode] = []
+        
+        func _get_parent_window(n: Node) -> WindowBase:
+            if !n.has_meta("parent_window"):
+                var window = n
+                while !window.is_in_group("window"):
+                    window = window.get_parent()
+                n.set_meta("parent_window", window)
+            return n.get_meta("parent_window", null)
+        
+        func _init(root_window: WindowBase, names:Array[String] = []) -> void:
+            if names.has(root_window.name): return
+            
+            window = root_window
+            names.append(window.name)
+            
+            var left_windows = window.containers\
+                .filter(func(c): return c.is_in_group("input"))\
+                .map(func(c:ResourceContainer): return _get_parent_window(c.input))\
+                .filter(func(w): return !names.has(w.name))
+            
+            var right_windows = []
+            for container:ResourceContainer in window.containers.filter(func(c): return c.is_in_group("output")):
+                right_windows.append_array(\
+                        container.outputs\
+                                .map(_get_parent_window)\
+                                .filter(func(w): return !names.has(w.name)))
+                                            
+            names.append_array(left_windows.map(func(w: WindowBase): return w.name))
+            names.append_array(right_windows.map(func(w: WindowBase): return w.name))
+            
+            left = left_windows.map(func(w: WindowBase): return WindowNode.new(w, names))
+            right = right_windows.map(func(w: WindowBase): return WindowNode.new(w, names))
+                    
+            
+        
+        
+        
 
 
 class WindowData extends Object:
