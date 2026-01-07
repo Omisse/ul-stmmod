@@ -1,13 +1,13 @@
-class_name SmartResourceContainer extends "res://scenes/resource_container.gd"
+class_name SmartResourceContainer extends ResourceContainer
 
 var demand: float = 0.0
-var window_binds: Dictionary[WindowBase, WindowData]
+var window_binds: Dictionary[WindowBase, STMWindowData]
 var old_demands: Dictionary = {}
+var old_demand: float = 0.0
 
-var consumers: Array[WindowData] = []
-var zero_demands: int = 0
+var consumers: Array[STMWindowData] = []
 
-var storages: Array[WindowData] = []
+var storages: Array[STMWindowData] = []
 var storage_connections: int = 0
 
 func _ready() -> void:
@@ -15,7 +15,7 @@ func _ready() -> void:
     Signals.new_upgrade.connect(_on_new_upgrade)
 
 func _on_new_upgrade() -> void:
-    for wd: WindowData in window_binds.values():
+    for wd: STMWindowData in window_binds.values():
         wd.update()
     
 func update_connections() -> void:
@@ -38,16 +38,16 @@ func _bind_windows(target_inputs: Array[ResourceContainer]):
         if window_binds.has(window):
             window_binds[window].add_source(c)
         else:
-            window_binds[window] = WindowData.new(window)
+            window_binds[window] = STMWindowData.new(window)
             window_binds[window].add_source(c)
     
-    for d: WindowData in window_binds.values():
+    for d: STMWindowData in window_binds.values():
         d.refill_sources(target_inputs)
         d.update()
 
 func _filter_windows():
-    consumers = window_binds.values().filter(func(w): return w.goal > 0)
-    storages = window_binds.values().filter(func(w): return is_zero_approx(w.goal))
+    consumers = window_binds.values().filter(func(w): return w.get_goal() > 0)
+    storages = window_binds.values().filter(func(w): return is_zero_approx(w.get_goal()))
     storage_connections = storages.reduce(func(acc,w): return acc+w.own_sources.size(), 0)
         
 func _cleanup_demands():
@@ -63,159 +63,75 @@ func _get_parent_window(n: Node) -> WindowBase:
         n.set_meta("parent_window", window)
     return n.get_meta("parent_window", null)
 
-func _sort_min_demand(left: WindowData, right: WindowData, demands:Dictionary) -> bool:
+func _sort_min_demand(left: STMWindowData, right: STMWindowData, demands:Dictionary) -> bool:
     #possbile crash source if demands does not have such key
     return demands[left] < demands[right]
-
+    
+func _sort_min_prod(left: STMWindowData, right:STMWindowData):
+    return left.get_min_prod() < right.get_min_prod()
 
 func tick() -> void :
     #vanilla
     for i: ResourceContainer in looping:
         i.count = 0
     
-    var remaining: float = count
     var targets = window_binds.values()    
-    
     var demands: Dictionary = {}
     
-    for target:WindowData in targets:
-        demands[target] = target.get_demand()
-    demand = targets.reduce(func(accum: float, window: WindowData) -> float: return accum+demands[window], 0.0)
-                
-    if demand >= remaining:
-        #min_demand priority logic
-        consumers.sort_custom(_sort_min_demand.bind(demands))
-        var current_zeroes = demands.values()\
-                .reduce(func(acc, val): return acc+int(is_zero_approx(val)), 0)
-        var pos = 0
-        for consumer:WindowData in consumers:
-            var target_amount = demands[consumer]
-            
-            #faster stabilization
-            if current_zeroes == zero_demands:
-                if !old_demands.has(consumer):
-                    old_demands[consumer] = target_amount
-                target_amount = 0.5*(target_amount+old_demands[consumer])
-                
-            var amount = min(target_amount, remaining)
-            if amount == remaining:
-                amount /= consumers.size()-pos
-            consumer.set_count(amount)
-            old_demands[consumer] = amount
-            remaining -= amount
-            pos += 1
-            
-        #due to floating-point precision limits, we may end up with negative values, almost zero compared to count.
-        remaining = 0.0    
-        zero_demands = current_zeroes
-        
+    for consumer:STMWindowData in consumers:
+        demands[consumer] = consumer.get_demand()  
+    
+    demand = consumers.reduce(func(accum: float, window: STMWindowData) -> float: return accum+demands[window], 0.0)
+    
+    if !is_finite(old_demand): old_demand = demand*2.0
+    #if !is_zero_approx(demand):
+     #   demand = lerpf(demand, old_demand, clampf(old_demand/demand, 0.1, 0.9))
+    
+    var remaining: float = 0.0
+    
+    if demand > count:
+        _distribute_low(demands)
     else:
-        #simple demand logic
-        for consumer:WindowData in consumers:
-            consumer.set_count(demands[consumer])
-            remaining -= demands[consumer]
-            
-    #due to floating-point precision limits, we may end up with negative values, almost zero compared to count.
-    remaining = 0.0 if remaining < 0 else remaining
+        remaining = _distribute_saturated(demands)
     
-    #even distribution between other connections
-    #we always need to set their values
-    for storage: WindowData in storages:
+    _set_storages(remaining)
+    old_demand = demand
+    
+
+func _distribute_low(demands: Dictionary):   
+    consumers.sort_custom(_sort_min_demand.bind(demands))
+    var max_diff = 0.000000
+    var remaining = count
+    var local_demand = demand
+    for consumer:STMWindowData in consumers:
+        var old = old_demands[consumer] if old_demands.has(consumer) else demands[consumer]
+        var current = demands[consumer]
+        var amount = 0.0
+    
+        old = max(old, current*0.01)
+        amount = lerpf(old, current, 0.001)
+                
+        if amount > remaining:
+            amount /= local_demand
+            amount *= remaining
+            
+        consumer.set_count(amount)
+        remaining = move_toward(remaining, 0, amount)
+        local_demand = move_toward(local_demand, 0, amount)
+        old_demands[consumer] = amount
+        
+    ModLoaderLog.debug("\trem: {0}".format([Utils.print_string(remaining)]), "kuuk:STM:SRC")
+
+func _distribute_saturated(demands: Dictionary) -> float:
+    var remaining = count
+    for consumer:STMWindowData in consumers:
+        consumer.set_count(demands[consumer])
+        remaining -= demands[consumer]
+    return clampf(remaining, 0.0, INF)
+    
+    
+    
+
+func _set_storages(remaining: float) -> void:
+    for storage: STMWindowData in storages:
         storage.set_count(remaining*storage.own_sources.size()/storage_connections)
-
-
-
-
-
-class WindowData extends Object:
-    var window: WindowBase
-    var goal: float = 0.0
-    var inputs_filtered: Dictionary[ResourceContainer, InputContainerData]
-    
-    var own_sources: Array[ResourceContainer]
-    
-    func _init(window: WindowBase) -> void:
-        self.window = window
-        _refilter_inputs()
-    
-    func add_source(container: ResourceContainer) -> void:
-        if !own_sources.has(container):
-            own_sources.append(container)
-        _refilter_inputs()
-    func erase_source(container: ResourceContainer) -> void:
-        if own_sources.has(container):
-            own_sources.erase(container)
-        _refilter_inputs()
-    func clear_sources() -> void:
-        own_sources.clear()
-        _refilter_inputs()
-    func refill_sources(inputs: Array[ResourceContainer]) -> void:
-        # since that containers are already childs of this window,
-        # there will be no situation when previously added input points onto different window
-        own_sources = own_sources.filter(inputs.has)
-        _refilter_inputs()
-        
-    
-    func _refilter_inputs() -> void:
-        var containers = window.containers\
-                .filter(func(c: ResourceContainer) -> bool:\
-                        return c.is_in_group("input") && !own_sources.has(c))
-        for container in containers:
-            if !inputs_filtered.has(container):
-                inputs_filtered[container] = InputContainerData.new(container)
-        
-        for key in inputs_filtered.keys():
-            if !containers.has(key):
-                inputs_filtered.erase(key)
-        
-    
-    func get_demand() -> float:
-        if own_sources.size() <= 0:
-            return 0.0
-        return _get_min_prod()*_get_goal()
-    
-    func set_count(value: float) -> void:
-        for source in own_sources:
-            source.count = value/own_sources.size()
-        
-    func _get_min_prod() -> float:
-        var result: float = 0.0
-        if inputs_filtered.values().size() == 0:
-            return result
-            
-        var first: bool = true
-        for container_data in inputs_filtered.values():
-            if first:
-                result = container_data.get_prod()
-                first = false
-            else:
-                result = min(result, container_data.get_prod())
-        return result
-    
-    func _get_goal() -> float:
-        return window.goal if "goal" in window else 0.0
-    
-    func update():
-        goal = _get_goal()
-        for container_data in inputs_filtered.values():
-            container_data.update()
-        
-
-class InputContainerData:
-    var container: ResourceContainer
-    var multiplier: float = 0.0
-    
-    func _init(c: ResourceContainer) -> void:
-        container = c
-        multiplier = _get_multi()
-    
-    func get_prod() -> float:
-        return container.production*multiplier
-    
-    func _get_multi() -> float:
-        var divisor = container.required if !is_zero_approx(container.required) else 1.0
-        return pow(divisor,-1)
-    
-    func update() -> void:
-        multiplier = _get_multi()
-    

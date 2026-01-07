@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://wocawew6ut7h"]
+[gd_scene load_steps=9 format=3 uid="uid://wocawew6ut7h"]
 
 [ext_resource type="PackedScene" uid="uid://b46qouyu3lx2m" path="res://scenes/windows/window_base.tscn" id="1_4h3qf"]
 [ext_resource type="Script" uid="uid://bu87cvibfboil" path="res://mods-unpacked/kuuk-SmartThreadManager/scenes/windows/window_smart_thread_manager.gd" id="2_seswn"]
@@ -6,6 +6,8 @@
 [ext_resource type="PackedScene" uid="uid://co5icrrrwscgg" path="res://scenes/input_container.tscn" id="4_2prua"]
 [ext_resource type="Script" uid="uid://b66hxrx7s10dt" path="res://mods-unpacked/kuuk-SmartThreadManager/scripts/smart_resource_container.gd" id="5_3qqw1"]
 [ext_resource type="PackedScene" uid="uid://b4efojcll7i7" path="res://scenes/output_container.tscn" id="5_lcoeh"]
+[ext_resource type="Script" uid="uid://dfcqieer47kgq" path="res://scripts/desktop_button.gd" id="7_seswn"]
+[ext_resource type="Script" uid="uid://0lblxsxkh4em" path="res://mods-unpacked/kuuk-SmartThreadManager/scripts/graph_visualizer.gd" id="8_3qqw1"]
 
 [node name="WindowBase" instance=ExtResource("1_4h3qf")]
 offset_bottom = 50.0
@@ -70,4 +72,16 @@ script = ExtResource("5_3qqw1")
 default_resource = "clock_speed"
 limit = -1.0
 
+[node name="DesktopButton" type="Button" parent="PanelContainer/MainContainer" index="3"]
+layout_mode = 2
+text = "Show Dependency Graph"
+script = ExtResource("7_seswn")
+metadata/_custom_type_script = "uid://dfcqieer47kgq"
+
+[node name="Control" type="Control" parent="." index="3" node_paths=PackedStringArray("source_container")]
+layout_mode = 2
+script = ExtResource("8_3qqw1")
+source_container = NodePath("../PanelContainer/MainContainer/Output0/ResourceContainer")
+
 [connection signal="resource_set" from="PanelContainer/MainContainer/Input" to="." method="_on_input_resource_set"]
+[connection signal="pressed" from="PanelContainer/MainContainer/DesktopButton" to="Control" method="_on_desktop_button_pressed"]
