@@ -1,4 +1,5 @@
 class_name STMWindowData extends Object
+
 var window: WindowBase
 var inputs_filtered: Dictionary[ResourceContainer, InputContainerData]
 
