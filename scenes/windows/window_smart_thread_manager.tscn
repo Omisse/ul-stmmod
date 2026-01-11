@@ -6,13 +6,15 @@
 [ext_resource type="PackedScene" uid="uid://co5icrrrwscgg" path="res://scenes/input_container.tscn" id="4_2prua"]
 [ext_resource type="Script" uid="uid://b66hxrx7s10dt" path="res://mods-unpacked/kuuk-SmartThreadManager/scripts/smart_resource_container.gd" id="5_3qqw1"]
 [ext_resource type="PackedScene" uid="uid://b4efojcll7i7" path="res://scenes/output_container.tscn" id="5_lcoeh"]
-[ext_resource type="Script" uid="uid://dfcqieer47kgq" path="res://scripts/desktop_button.gd" id="7_seswn"]
-[ext_resource type="Script" uid="uid://0lblxsxkh4em" path="res://mods-unpacked/kuuk-SmartThreadManager/scripts/graph_visualizer.gd" id="8_3qqw1"]
+[ext_resource type="ButtonGroup" uid="uid://brl2skqamjjxq" path="res://mods-unpacked/kuuk-SmartThreadManager/scenes/windows/window_stm_button_group.tres" id="7_seswn"]
+[ext_resource type="Script" uid="uid://dfcqieer47kgq" path="res://scripts/desktop_button.gd" id="7_skhyp"]
 
 [node name="WindowBase" instance=ExtResource("1_4h3qf")]
 offset_bottom = 50.0
 script = ExtResource("2_seswn")
 window = "smart_thread_manager"
+help = null
+warn_deletion = null
 
 [node name="Icon" parent="TitlePanel/TitleContainer" index="0"]
 texture = ExtResource("3_jjcgv")
@@ -72,16 +74,36 @@ script = ExtResource("5_3qqw1")
 default_resource = "clock_speed"
 limit = -1.0
 
-[node name="DesktopButton" type="Button" parent="PanelContainer/MainContainer" index="3"]
+[node name="ButtonsMarginContainer" type="MarginContainer" parent="PanelContainer/MainContainer" index="3"]
 layout_mode = 2
-text = "Show Dependency Graph"
-script = ExtResource("7_seswn")
+theme_override_constants/margin_left = -8
+theme_override_constants/margin_right = -8
+theme_override_constants/margin_bottom = -8
+
+[node name="ButtonsContainer" type="HBoxContainer" parent="PanelContainer/MainContainer/ButtonsMarginContainer" index="0"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 1
+
+[node name="ButtonDemandLogic" type="Button" parent="PanelContainer/MainContainer/ButtonsMarginContainer/ButtonsContainer" index="0"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"WindowButtonBottom1"
+toggle_mode = true
+button_group = ExtResource("7_seswn")
+text = "Simple"
+script = ExtResource("7_skhyp")
 metadata/_custom_type_script = "uid://dfcqieer47kgq"
 
-[node name="Control" type="Control" parent="." index="3" node_paths=PackedStringArray("source_container")]
+[node name="ButtonGraphLogic" type="Button" parent="PanelContainer/MainContainer/ButtonsMarginContainer/ButtonsContainer" index="1"]
 layout_mode = 2
-script = ExtResource("8_3qqw1")
-source_container = NodePath("../PanelContainer/MainContainer/Output0/ResourceContainer")
+size_flags_horizontal = 3
+theme_type_variation = &"WindowButtonBottom3"
+toggle_mode = true
+button_pressed = true
+button_group = ExtResource("7_seswn")
+text = "Graph"
+script = ExtResource("7_skhyp")
+metadata/_custom_type_script = "uid://dfcqieer47kgq"
 
 [connection signal="resource_set" from="PanelContainer/MainContainer/Input" to="." method="_on_input_resource_set"]
-[connection signal="pressed" from="PanelContainer/MainContainer/DesktopButton" to="Control" method="_on_desktop_button_pressed"]

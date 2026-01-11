@@ -1,83 +1,72 @@
-class_name STMWindowData extends Object
+class_name STMWindowData extends RefCounted
+
+enum STMWindowRoles {
+    STM_ARTIFACT,
+    STM_CONSUMER,
+    STM_STORAGE,
+    STM_MANAGER,
+}
 
 var window: WindowBase
-var inputs_filtered: Dictionary[ResourceContainer, InputContainerData]
+var inputs: Dictionary[String, ResourceContainer]
+var role: STMWindowRoles = STMWindowRoles.STM_ARTIFACT
 
-var own_sources: Array[ResourceContainer]
+var provided: Array = []
+var dependent: Array = []
+var icdata: Dictionary[String, STMContainerData]
 
 func _init(window: WindowBase) -> void:
     self.window = window
-    _refilter_inputs()
-
-func add_source(container: ResourceContainer) -> void:
-    if !own_sources.has(container):
-        own_sources.append(container)
-    _refilter_inputs()
-func erase_source(container: ResourceContainer) -> void:
-    if own_sources.has(container):
-        own_sources.erase(container)
-    _refilter_inputs()
-func clear_sources() -> void:
-    own_sources.clear()
-    _refilter_inputs()
-func refill_sources(inputs: Array[ResourceContainer]) -> void:
-    # since that containers are already childs of this window,
-    # there will be no situation when previously added input points onto different window
-    own_sources = own_sources.filter(inputs.has)
-    _refilter_inputs()
-    
-
-func _refilter_inputs() -> void:
     var containers = window.containers\
-            .filter(func(c: ResourceContainer) -> bool:\
-                    return c.is_in_group("input") && !own_sources.has(c))
+            .filter(func(c): return c.is_in_group("input"))
     for container in containers:
-        if !inputs_filtered.has(container):
-            inputs_filtered[container] = InputContainerData.new(container)
+        inputs.set(container.id, container)
     
-    for key in inputs_filtered.keys():
-        if !containers.has(key):
-            inputs_filtered.erase(key)
+    if "demand" in window:
+        role = STMWindowRoles.STM_MANAGER
+    elif "goal" in window:
+        role = STMWindowRoles.STM_CONSUMER
+    else:
+        role = STMWindowRoles.STM_STORAGE
     
-
+    set_containers()
+    
+func set_containers(sources: Array = []) -> void:
+    provided = inputs.keys().filter(sources.has)
+    dependent = inputs.keys().filter(func(n): return !provided.has(n))
+    for name in provided:
+        icdata.erase(name)
+    for name in dependent:
+        if !icdata.has(name): icdata[name] = STMContainerData.new(inputs[name])
+    
 func get_demand() -> float:
-    if own_sources.size() <= 0:
+    if provided.is_empty():
         return 0.0
+    if role == STMWindowRoles.STM_MANAGER:
+        return window.demand
     return get_min_prod()*get_goal()
 
 func set_count(value: float) -> void:
-    for source in own_sources:
-        source.count = value/own_sources.size()
+    var size = provided.size()
+    for container in provided.map(func(s): return inputs[s]):
+        container.count = value/size
     
 func get_min_prod() -> float:
-    var result: float = 0.0
-    if inputs_filtered.values().size() == 0:
-        return result
-        
-    var first: bool = true
-    for container_data in inputs_filtered.values():
-        if first:
-            result = container_data.get_prod()
-            first = false
-        else:
-            result = min(result, container_data.get_prod())
-    return result
-
-func get_max_prod() -> float:
-    if inputs_filtered.values().size() == 0:
+    if dependent.is_empty():
         return 0.0
-    
-    return inputs_filtered.values().map(func(cd: InputContainerData): return cd.get_prod()).reduce(max)
+    if dependent.size() == 1:
+        return icdata[dependent[0]].get_prod()
+    return dependent.map(func(name): return icdata[name].get_prod()).reduce(min)
 
 func get_goal() -> float:
-    return window.goal if "goal" in window else 0.0
+    return window.goal if role == STMWindowRoles.STM_CONSUMER else 0.0
 
 func update():
-    for container_data in inputs_filtered.values():
-        container_data.update()
+    for cd in icdata.values():
+        cd.update()
         
 
-class InputContainerData:
+class STMContainerData extends RefCounted:
     var container: ResourceContainer
     var multiplier: float = 0.0
     
@@ -86,7 +75,7 @@ class InputContainerData:
         multiplier = _get_multi()
     
     func get_prod() -> float:
-        return container.production*multiplier
+        return multiplier*container.production
     
     func _get_multi() -> float:
         var divisor = container.required if !is_zero_approx(container.required) else 1.0

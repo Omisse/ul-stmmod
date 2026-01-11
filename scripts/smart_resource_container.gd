@@ -1,18 +1,37 @@
 class_name SmartResourceContainer extends ResourceContainer
 
 var demand: float = 0.0
-var window_binds: Dictionary[WindowBase, STMWindowData]
-var window_graph: STMWindowGraph
-var old_demands: Dictionary = {}
+var window_data: Dictionary[StringName, STMWindowData]
+var window_graph: STMWindowGraph = null
+var old_demands: Dictionary[StringName, float]
 
-var consumers: Array[STMWindowData] = []
-var start_consumers: Array[STMWindowData] = []
-var other_consumers: Array[STMWindowData] = []
+var consumers: Array = [] # Array[StringName]
+var line_suppliers: Array = [] # Array[StringName]
+var line_receivers: Array = [] # Array[StringName]
 
-var storages: Array[STMWindowData] = []
+var managers: Array = []
+
+var storages: Array = []
 var storage_connections: int = 0
 
 var multiplier = 0.5
+
+var must_update = true
+
+var distribution_mode: STMContainerMode = STMContainerMode.LOGIC_DEFAULT:
+    get:
+        return distribution_mode
+    set(value):
+        _update_callable(value)
+        must_update = true
+        
+var distribution_callable: Callable
+
+enum STMContainerMode {
+    LOGIC_DEFAULT,
+    LOGIC_DEMAND,
+    LOGIC_GRAPH,
+}
 
 func _ready() -> void:
     super()
@@ -20,182 +39,289 @@ func _ready() -> void:
     window_graph = STMWindowGraph.new(STMUtils.get_parent_window(self))
     window_graph.changed.connect(_on_graph_changed)
     window_graph.request_filter_depth(self, 0)
-    window_graph.request_filter_depth(self, 1)
-    
-    
-func update_connections() -> void:
-    super()
-    _update_windows()
-    _filter_demands()
-    multiplier = 0.5
-    if (!should_tick()): tick()
-    
-func tick() -> void :
-    #vanilla
-    for i: ResourceContainer in looping:
-        i.count = 0
-        
-    if consumers.size() == 0:
-        _set_storages(count)
-    else:
-        _set_storages(_distribute_graph_based(_get_demands()))
-        #if demand_mult > 1.0 && demand > count:
-            #_set_storages(_distribute_saturated(demands))
-        #else:
-            #_set_storages(_distribute_graph_based(demand_mult, receiver_demand, demands))
-            
-    
-
-
-func _get_demands() -> Dictionary:
-    var demands = {}
-    for consumer:STMWindowData in consumers:
-        demands[consumer] = consumer.get_demand()
-    return demands
-    
-        
-    
-
 
 func _on_new_upgrade() -> void:
-    for wd: STMWindowData in window_binds.values():
+    # actually that won't change anything in 2.0.19
+    for wd: STMWindowData in window_data.values():
         wd.update()
         
 func _on_graph_changed() -> void:
-    update_connections()
-    consumers.sort_custom.bind(_sort_min_receivers)
-    start_consumers = consumers.filter(func(wd: STMWindowData): return window_graph.filtered[0][wd.window.name].suppliers == 0)
-    other_consumers = consumers.filter(func(wd): return !start_consumers.has(wd))
+    # we do this just because our update must _always_ happen before the tick
+    must_update = true
 
     
+func update_connections() -> void:
+    super()
+    # we do this just because our update must _always_ happen before the tick
+    must_update = true
+    if (!should_tick()): tick()
+    
+func tick() -> void :
+    # we do this just because our update must _always_ happen before the tick
+    if must_update:
+        _update_data()
+    # vanilla
+    for i: ResourceContainer in looping:
+        i.count = 0
+    
+    #gotta be global tbh
+    var state = {}
+    
+    distribution_callable.call(count, state)
+    
+    demand = state.get_or_add("demand", 0.0)
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+func _update_callable(mode: STMContainerMode):
+    match mode:
+        STMContainerMode.LOGIC_DEFAULT:
+            distribution_callable = _distribution_default
+        STMContainerMode.LOGIC_DEMAND:
+            distribution_callable = _distribution_demand
+        STMContainerMode.LOGIC_GRAPH:
+            distribution_callable = _distribution_graph
+        
+
+    
+func _update_data() -> void:
+    _update_windows()
+    _filter_demands()
+    _update_lines()
+    multiplier = 0.5
+    must_update = false
+        
 func _update_windows() -> void:
     _bind_windows(transfer)
     _filter_windows()
 
 func _bind_windows(target_inputs: Array[ResourceContainer]):
-    var windows := target_inputs.map(STMUtils.get_parent_window)
-    var queued_for_deletion := window_binds.keys()\
-            .filter(func(key) -> bool:\
-                    return !windows.has(key))
-    for key in queued_for_deletion:
-        window_binds.erase(key)
-            
-    for c: ResourceContainer in target_inputs:
-        var window = STMUtils.get_parent_window(c)
-        if window_binds.has(window):
-            window_binds[window].add_source(c)
-        else:
-            window_binds[window] = STMWindowData.new(window)
-            window_binds[window].add_source(c)
+    var windows := target_inputs\
+            .map(STMUtils.get_parent_window)\
+            .filter(func(w): return w!=null)
     
-    for d: STMWindowData in window_binds.values():
-        d.refill_sources(target_inputs)
-        d.update()
+    var ids = target_inputs\
+            .map(func(rc: ResourceContainer): return rc.id)
+            
+    for window in windows:
+        window_data\
+                .get_or_add(window.name, STMWindowData.new(window))\
+                .set_containers(ids)
+                
+    var names = windows.map(func(w): return w.name)
+    for key:StringName in window_data.keys():
+        if !names.has(key):
+            window_data.erase(key)
+        
 
 func _filter_windows():
-    consumers = window_binds.values().filter(func(w): return w.get_goal() > 0)
-    storages = window_binds.values().filter(func(w): return is_zero_approx(w.get_goal()))
-    storage_connections = storages.reduce(func(acc,w): return acc+w.own_sources.size(), 0)
+    consumers = window_data.keys()\
+            .filter(func(n):\
+                return window_data[n].role == STMWindowData.STMWindowRoles.STM_CONSUMER)
+    managers = window_data.keys()\
+            .filter(func(n):\
+                return window_data[n].role == STMWindowData.STMWindowRoles.STM_MANAGER)
+    storages = window_data.keys()\
+            .filter(func(n):\
+                return window_data[n].role == STMWindowData.STMWindowRoles.STM_STORAGE)
+                    
+    storage_connections = storages.reduce(func(acc,n:StringName): return acc+window_data[n].provided.size(), 0)
         
 func _filter_demands():
-    var erase_keys = old_demands.keys().filter(func(key): return !window_binds.values().has(key))
-    for key in erase_keys:
-        old_demands.erase(key)
+    for key in old_demands.keys():
+        if !window_data.has(key):
+            old_demands.erase(key)
 
-func _sort_min_demand(left: STMWindowData, right: STMWindowData, demands:Dictionary) -> bool:
-    #possbile crash source if demands does not have such key
-    return demands[left] < demands[right]
+
+func _update_lines() -> void:
+    line_suppliers = consumers\
+            .filter(func(n: StringName):\
+                return window_graph.filtered[0][n].suppliers == 0)
+    line_receivers = consumers\
+            .filter(func(n: StringName): return !line_suppliers.has(n))
+            
+func _get_demands() -> Dictionary:
+    var out = {}
+    for cname:StringName in consumers:
+        out[cname] = window_data[cname].get_demand()
+    for cname:StringName in managers:
+        out[cname] = window_data[cname].get_demand()
+    return out
+
+
+
+
+
+
+
+
+
+
+
     
-func _sort_min_receivers(left: STMWindowData, right:STMWindowData):
-    return window_graph.filtered[0][left.window.name].receivers < window_graph.filtered[0][right.window.name].receivers
+func _distribution_default(value: float, state: Dictionary):
+    var remaining = value
+    var demands = _get_demands()
+    var total = demands.values().reduce(func(acc, flt): return acc+flt, 0.0)
+    var ratio = clampf(remaining/total, 0.0, 1.0)
+    for key in demands.keys():
+        var amount = demands[key]*ratio
+        window_data[key].set_count(amount)
+        remaining -= amount
+    state.demand = total
+    _set_storages(clampf(remaining, 0.0, INF))
+    
+func _distribution_demand(value: float, state: Dictionary):
+    var demands: Dictionary = _get_demands()
+    state.demand = demands.values().reduce(func(acc, flt): return acc+flt, 0.0)
+    
+    if is_zero_approx(value):
+        for wd in window_data.values():
+            wd.set_count(0.0)
+            return
+    
+    var remaining: float = value
+    var targets = consumers.duplicate()
+    targets.append_array(managers)
+    _set_storages(_set_targets_demand(value, targets, demands, state))
+    
+func _distribution_graph(value: float, state: Dictionary) -> void:
+    var remaining = count
+    var demands = _get_demands()
+    
+    if !consumers.is_empty():
+        remaining = _set_consumers_graph(remaining, demands, state)
+    
+    _set_storages(_set_managers(remaining, demands, state))
+    
 
 
 
 
-func _distribute_graph_based(demands: Dictionary) -> float:
-    if is_zero_approx(count):
-        for consumer in consumers:
-            consumer.set_count(0)
+
+
+func _set_targets_demand(value: float, targets: Array, demands:Dictionary, state: Dictionary):
+    if is_zero_approx(value):
+        for name in targets:
+            window_data[name].set_count(0.0)
         return 0.0
     
-    var receiver_demand = other_consumers.reduce(func(acc, wd): return acc+demands[wd], 0.0)
-    var remaining = count
-    var rem_mult = 1.0
-    
-    #fill the start of our line, that thing will affect everything else
-    for consumer in start_consumers:
-        var amount = min(remaining, 0.5*(old_demands.get_or_add(consumer, 0.0)+demands[consumer]*multiplier))
-        consumer.set_count(amount)
+    targets.sort_custom(func(a,b): return demands[a] < demands[b])
+    var remaining = value
+    var multis = state.get_or_add("key_multipliers", {})
+    var old_demands = state.get_or_add("old_demands", {})
+    for name:StringName in targets:
+        var multi = multis.get_or_add(name, 1.0)
+        var target_amount = demands[name]*multi
+        var amount = min(
+                remaining,
+                demands[name],
+                0.5*(old_demands.get_or_add(name, 0.0)+target_amount)
+        )
+        
+        if amount == remaining && name != targets.back():
+            amount *= 0.5
+            multis[name] = clampf(multi-remap(absf(1.0-remaining/target_amount), 0.0, 1.0, 1e-14, 1e-1), 1e-7, 1.0)
+        elif demands[name] > amount:
+            multis[name] = clampf(multi+remap(absf(1.0-target_amount/demands[name]), 0.0, 1.0, 1e-14, 1e-1), 1e-7, 1.0)
+            
+        window_data[name].set_count(amount)
+        old_demands[name] = amount
         remaining -= amount
-        old_demands[consumer] = amount
+        
+    state.merge({
+        "key_multipliers": multis,
+        "old_demands": old_demands,
+    }, true)
     
-    var diff = remap(absf(1.0-clampf(remaining/receiver_demand, 0.0, 2.0)), 0.0, 1.0, 1e-14, 1.0)
-    
-    if remaining >= receiver_demand && multiplier < 1.0:
-        multiplier = 0.5*(multiplier+multiplier*(1.0+diff))
-        if multiplier > 1.0: multiplier = 1.0
-    elif remaining < receiver_demand:
-        rem_mult = remaining/receiver_demand if !is_zero_approx(receiver_demand) else 0.0
-        multiplier = 0.5*(multiplier+multiplier*(1.0-diff))
-    
-    #no point in looking at something like 1-1e-14 < 1.0
-    if is_equal_approx(rem_mult, 1.0): rem_mult = 1.0
-    
-    for consumer in other_consumers:
-        var amount = demands[consumer]*rem_mult
-        consumer.set_count(amount)
-        remaining -= amount
-    
-    demand = count/multiplier if multiplier < 1.0 else count-remaining
-    
-    remaining = clampf(remaining, 0.0, INF)
-    return remaining
+    return 0.0 if value < state.demand else clampf(remaining, 0.0, INF)
 
 
-func _distribute_low(demands: Dictionary):   
-    var remaining:float = count
+
+
+
+
+
+
+func _set_consumers_graph(remaining: float, demands: Dictionary, state: Dictionary) -> float:
+    var demand = state.get_or_add("demand", 0.0)
+    var multi = state.get_or_add("multiplier", 1.0)
+    var old_demands = state.get_or_add("old_demands", {})
     
-    var start_demand:float = start_consumers.reduce(func(acc, wd: STMWindowData): return acc+demands[wd], 0.0)
-    var other_demand:float = demand-start_demand
+    if is_zero_approx(remaining):
+        for name in consumers:
+            window_data[name].set_count(0)
+        demand = 0.5*(demand+demands.values().reduce(func(acc, flt): return acc+flt, 0.0))
+    else:
+        var start_remaining = remaining
+        #fill the start of our line, that thing will affect everything else
+        for name in line_suppliers:
+            var amount = min(remaining, 0.5*(old_demands.get_or_add(name, 0.0)+demands[name]*multi))
+            window_data[name].set_count(amount)
+            old_demands[name] = amount
+            remaining -= amount
+        
+        var receiver_demand = line_receivers.reduce(func(acc, n): return acc+demands[n], 0.0)
+        var is_zero_receiver = is_zero_approx(receiver_demand)
+        var diff_ratio = remaining/receiver_demand if !is_zero_receiver else 0.0
+        
+        var rem_mult = clampf(diff_ratio, 0.0, 1.0)
+        rem_mult = 1.0 if is_equal_approx(rem_mult,1.0) else rem_mult
+        #at this point i don't really know _why_ exactly remap does the thing.
+        var diff = remap(absf(1.0-clampf(diff_ratio, 0.0, 2.0)), 0.0, 1.0, 1e-14, 1.0)
+        if (diff_ratio >= 1.0 || is_zero_receiver) && multi < 1.0:
+            multi = clampf(0.5*(multi+multi*(1.0+diff)), 1e-14, 1.0)
+        elif diff_ratio < 1.0 && !is_zero_receiver:
+            multi = clampf(0.5*(multi+multi*(1.0-diff)), 1e-14, 1.0)
+        
+        #no point in looking at something like 1-1e-14 < 1.0
+            
+        for name in line_receivers:
+            var amount = demands[name]*rem_mult
+            window_data[name].set_count(amount)
+            remaining -= amount
+        
+        
+        state.demand = start_remaining/multi if multi < 1.0 else count-remaining
+        
+        remaining = 0.0 if start_remaining/demand < 1.0 else clampf(remaining, 0.0, INF)
     
-    var other_mult = clampf(remaining/other_demand, 0.0, 1.0) if !is_zero_approx(other_demand) else 0.0
-    remaining -= other_demand*other_mult
-    var start_mult = clampf(remaining/start_demand, 0.0,1.0) if !is_zero_approx(start_demand) else 0.0
+    state.merge({
+        "demand" = demand,
+        "multiplier" = multi,
+        "old_demands" = old_demands,
+    }, true)
     
-    for consumer in other_consumers:
-        consumer.set_count(demands[consumer]*other_mult)
+    return remaining 
+
+func _set_managers(remaining: float, demands: Dictionary, state: Dictionary) -> float:
+    if is_zero_approx(remaining):
+        return 0.0
     
-    for consumer in start_consumers:
-        var new = demands[consumer]*start_mult
-        var old = old_demands.get_or_add(consumer, new*0.0001)
-        var big = max(new, old)
-        var small = min(new, old)
-        var diff = clampf(big/small, 1.0, 2.0) if !is_zero_approx(small) else 2.0
-        #var multiplier = pow(remap(diff, 1.0, big*0.01, 1e-6, 1e-1), window_graph.filtered[1][consumer.window.name].receivers)
-        var multiplier = remap(diff, 1.0, 2.0, 1e-6, 1e-1)
-        var amount = min(remaining*0.9, lerpf(old, new, 0.5))
-        consumer.set_count(amount)
-        old_demands[consumer] = amount
-        ModLoaderLog.debug("\tmulty: {0}".format([multiplier]), "kuuk:STM:SRC")
+    var summary = managers.reduce(func(acc, n): return acc+demands[n], 0.0)
+    var ratio = summary/remaining if !is_zero_approx(remaining) else 0.0
+    for name in managers:
+        var data = window_data[name]
+        var amount = min(data.get_demand()*ratio, remaining)
+        data.set_count(amount)
         remaining -= amount
     
-    ModLoaderLog.debug("\trem: {0}".format([Utils.print_string(remaining)]), "kuuk:STM:SRC")
-
-func _distribute_saturated(demands: Dictionary) -> float:
-    var remaining = count
-    for consumer:STMWindowData in consumers:
-        consumer.set_count(demands[consumer])
-        remaining -= demands[consumer]
-    demand = count-remaining
+    state.demand = state.get_or_add("demand",0.0)+summary
+    
     return clampf(remaining, 0.0, INF)
-    
-    
-    
-
+        
+ 
 func _set_storages(remaining: float) -> void:
-    for storage: STMWindowData in storages:
-        storage.set_count(remaining*storage.own_sources.size()/storage_connections)
+    for name in storages:
+        var data = window_data[name]
+        data.set_count(remaining*data.provided.size()/storage_connections)
         
 func _exit_tree() -> void:
     window_graph.release_filter_depth(self, 0)
-    window_graph.release_filter_depth(self, 1)
