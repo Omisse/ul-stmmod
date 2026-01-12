@@ -1,43 +1,33 @@
 extends WindowIndexed
 
-@onready var input: ResourceContainer = $PanelContainer / MainContainer / Input
+@onready var input = $PanelContainer / MainContainer / Input
 #kinda need to remove Output0, but it will possibly break a thing or two on clients
-@onready var output: SmartResourceContainer = $PanelContainer / MainContainer / Output0 / ResourceContainer
+@onready var output = $PanelContainer / MainContainer / Output
 @onready var progress_bar = $PanelContainer / MainContainer / Progress / ProgressBar
 @onready var demand_label = $PanelContainer / MainContainer / Progress / ProgressContainer / DemandsLabel
 @onready var percent_label = $PanelContainer / MainContainer / Progress / ProgressContainer / PercentLabel
+@onready var mode_button = $OptionButton
 
-@onready var button_group: ButtonGroup = $PanelContainer/MainContainer/ButtonsMarginContainer/ButtonsContainer/ButtonSimpleScript.button_group
-@onready var simple_logic_button: BaseButton = $PanelContainer/MainContainer/ButtonsMarginContainer/ButtonsContainer/ButtonSimpleLogic
-@onready var graph_logic_button: BaseButton = $PanelContainer/MainContainer/ButtonsMarginContainer/ButtonsContainer/ButtonGraphLogic
+@export var default_mode = 0
 
 var demand:
     get():
         return output.demand
-        
-var container_mode: SmartResourceContainer.STMContainerMode = SmartResourceContainer.STMContainerMode.LOGIC_DEFAULT:
+
+var on_load_mode = default_mode
+
+@onready var container_mode:
     get:
-        return output.distribution_mode if output else null
+        return output.get("distribution_mode")
     set(value):
-        if output.distribution_mode != value:
-            output.distribution_mode = value
+        on_load_mode = value
+        if output.get("distribution_mode") != value:
+            output.set("distribution_mode", value)
         
 func _ready() -> void:
     super()
-    button_group.pressed.connect(_on_script_button_pressed)
-    
-func _on_script_button_pressed(button: BaseButton) -> void:
-    ModLoaderLog.debug(button.name, "kuuk:STM:STMWindow")
-    container_mode = _get_logic(button_group.get_pressed_button())
-    
-func _get_logic(button: BaseButton) -> SmartResourceContainer.SMTContainerMode:
-    match button:
-        simple_logic_button:
-            return SmartResourceContainer.STMContainerMode.LOGIC_SIMPLE
-        graph_logic_button:
-            return SmartResourceContainer.STMContainerMode.LOGIC_GRAPH
-        _:
-            return SmartResourceContainer.STMContainerMode.LOGIC_DEFAULT
+    container_mode = on_load_mode
+    mode_button.select(mode_button.get_item_index(on_load_mode))
     
 func process(delta: float) -> void :
     output.count = input.count
@@ -55,9 +45,22 @@ func _on_input_resource_set() -> void :
 func export() -> Dictionary:
     var dict = super()
     dict["filename"] = "../../".path_join(ModLoaderMod.get_mod_data("kuuk-SmartThreadManager").dir_path.trim_prefix("res://")).path_join("scenes/windows/window_smart_thread_manager.tscn")
+    dict["on_load_mode"] = on_load_mode
     return dict
 
 func save() -> Dictionary:
     var dict = super()
     dict["filename"] = "../../".path_join(ModLoaderMod.get_mod_data("kuuk-SmartThreadManager").dir_path.trim_prefix("res://")).path_join("scenes/windows/window_smart_thread_manager.tscn")
+    dict["on_load_mode"] = on_load_mode
     return dict
+
+
+func _on_option_button_item_selected(index: int) -> void:
+    container_mode = mode_button.get_item_id(index)
+
+
+func _on_output_internal_error() -> void:
+    if !closing:
+        for container in containers:
+            container.close()
+        super.close()

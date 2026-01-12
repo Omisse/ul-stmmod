@@ -1,4 +1,4 @@
-class_name STMWindowData extends RefCounted
+extends RefCounted
 
 enum STMWindowRoles {
     STM_ARTIFACT,
@@ -26,8 +26,10 @@ func _init(window: WindowBase) -> void:
         role = STMWindowRoles.STM_MANAGER
     elif "goal" in window:
         role = STMWindowRoles.STM_CONSUMER
-    else:
+    elif window.is_in_group("window"):
         role = STMWindowRoles.STM_STORAGE
+    else:
+        role = STMWindowRoles.STM_ARTIFACT
     
     set_containers()
     

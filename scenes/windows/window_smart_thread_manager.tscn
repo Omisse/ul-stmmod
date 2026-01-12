@@ -1,26 +1,166 @@
-[gd_scene load_steps=9 format=3 uid="uid://wocawew6ut7h"]
+[gd_scene load_steps=21 format=3 uid="uid://wocawew6ut7h"]
 
 [ext_resource type="PackedScene" uid="uid://b46qouyu3lx2m" path="res://scenes/windows/window_base.tscn" id="1_4h3qf"]
 [ext_resource type="Script" uid="uid://bu87cvibfboil" path="res://mods-unpacked/kuuk-SmartThreadManager/scenes/windows/window_smart_thread_manager.gd" id="2_seswn"]
 [ext_resource type="Texture2D" uid="uid://mbrbl6fxx1" path="res://textures/icons/brain.png" id="3_jjcgv"]
 [ext_resource type="PackedScene" uid="uid://co5icrrrwscgg" path="res://scenes/input_container.tscn" id="4_2prua"]
+[ext_resource type="Texture2D" uid="uid://bdfijswsd3b4d" path="res://mods-unpacked/kuuk-SmartThreadManager/textures/1x1.png" id="4_skhyp"]
 [ext_resource type="Script" uid="uid://b66hxrx7s10dt" path="res://mods-unpacked/kuuk-SmartThreadManager/scripts/smart_resource_container.gd" id="5_3qqw1"]
 [ext_resource type="PackedScene" uid="uid://b4efojcll7i7" path="res://scenes/output_container.tscn" id="5_lcoeh"]
-[ext_resource type="ButtonGroup" uid="uid://brl2skqamjjxq" path="res://mods-unpacked/kuuk-SmartThreadManager/scenes/windows/window_stm_button_group.tres" id="7_seswn"]
-[ext_resource type="Script" uid="uid://dfcqieer47kgq" path="res://scripts/desktop_button.gd" id="7_skhyp"]
+[ext_resource type="Script" uid="uid://o3wkg3iojijw" path="res://mods-unpacked/kuuk-SmartThreadManager/scripts/option_desktop_button.gd" id="6_3qqw1"]
+[ext_resource type="FontVariation" uid="uid://o1lo3q4dynmn" path="res://themes/fonts/main.tres" id="8_mgogo"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nuec8"]
+bg_color = Color(0.270588, 0.333333, 0.458824, 1)
+draw_center = false
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.101961, 0.12549, 0.172549, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_10so0"]
+bg_color = Color(0.101961, 0.12549, 0.172549, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.521569, 0, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_30s71"]
+bg_color = Color(0.101961, 0.12549, 0.172549, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.270588, 0.333333, 0.458824, 1)
+border_blend = true
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_riwsl"]
+bg_color = Color(0.0613839, 0.0725446, 0.0976563, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.101961, 0.12549, 0.172549, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_h6jll"]
+bg_color = Color(0.08627451, 0.101960786, 0.13725491, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_y7j2n"]
+bg_color = Color(0.101960786, 0.1254902, 0.17254902, 1)
+border_color = Color(1, 1, 1, 0.75000006)
+border_blend = true
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jbbn5"]
+draw_center = false
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_quws3"]
+bg_color = Color(0.08627451, 0.101960786, 0.13725491, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.52156866, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1axda"]
+bg_color = Color(0.08627451, 0.101960786, 0.13725491, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vv18v"]
+bg_color = Color(0.0627451, 0.07058824, 0.09803922, 1)
+
+[sub_resource type="Theme" id="Theme_6kkdg"]
+default_font = ExtResource("8_mgogo")
+default_font_size = 24
+Button/colors/font_color = Color(0.8509804, 0.96862745, 1, 1)
+Button/colors/font_disabled_color = Color(0.27058825, 0.33333334, 0.45882353, 1)
+Button/colors/font_hover_color = Color(1, 0.52156866, 0, 1)
+Button/colors/font_hover_pressed_color = Color(1, 0.521569, 0, 1)
+Button/colors/font_pressed_color = Color(1, 0.521569, 0, 1)
+Button/colors/icon_disabled_color = Color(0.27058825, 0.33333334, 0.45882353, 1)
+Button/colors/icon_hover_color = Color(1, 0.521569, 0, 1)
+Button/colors/icon_hover_pressed_color = Color(1, 0.521569, 0, 1)
+Button/colors/icon_normal_color = Color(0.5686275, 0.69411767, 0.9019608, 1)
+Button/colors/icon_pressed_color = Color(1, 0.521569, 0, 1)
+Button/constants/alignment = 1
+Button/font_sizes/font_size = 32
+Button/styles/disabled = SubResource("StyleBoxFlat_nuec8")
+Button/styles/hover = SubResource("StyleBoxFlat_10so0")
+Button/styles/normal = SubResource("StyleBoxFlat_30s71")
+Button/styles/pressed = SubResource("StyleBoxFlat_riwsl")
+PopupMenu/colors/font_color = Color(0.8509804, 0.96862745, 1, 1)
+PopupMenu/colors/font_disabled_color = Color(0.27058825, 0.33333334, 0.45882353, 1)
+PopupMenu/colors/font_hover_color = Color(1, 0.52156866, 0, 1)
+PopupMenu/colors/font_separator_color = Color(1, 0.52156866, 0, 1)
+PopupMenu/colors/title_color = Color(0.8509804, 0.96862745, 1, 1)
+PopupMenu/icons/radio_checked = ExtResource("4_skhyp")
+PopupMenu/icons/radio_checked_disabled = ExtResource("4_skhyp")
+PopupMenu/icons/radio_unchecked = ExtResource("4_skhyp")
+PopupMenu/icons/radio_unchecked_disabled = ExtResource("4_skhyp")
+PopupMenu/styles/hover = SubResource("StyleBoxFlat_h6jll")
+PopupMenu/styles/panel = SubResource("StyleBoxFlat_y7j2n")
+stmOptionButton/base_type = &"OptionButton"
+stmOptionButton/icons/arrow = ExtResource("4_skhyp")
+stmOptionButton/styles/focus = SubResource("StyleBoxFlat_jbbn5")
+stmOptionButton/styles/hover = SubResource("StyleBoxFlat_quws3")
+stmOptionButton/styles/normal = SubResource("StyleBoxFlat_1axda")
+stmOptionButton/styles/pressed = SubResource("StyleBoxFlat_vv18v")
 
 [node name="WindowBase" instance=ExtResource("1_4h3qf")]
 offset_bottom = 50.0
 script = ExtResource("2_seswn")
+default_mode = 1
 window = "smart_thread_manager"
-help = null
-warn_deletion = null
 
 [node name="Icon" parent="TitlePanel/TitleContainer" index="0"]
 texture = ExtResource("3_jjcgv")
 
 [node name="Title" parent="TitlePanel/TitleContainer" index="1"]
 text = "Auto Allocator"
+
+[node name="OptionButton" type="OptionButton" parent="." index="1"]
+layout_mode = 2
+size_flags_vertical = 3
+theme = SubResource("Theme_6kkdg")
+theme_type_variation = &"stmOptionButton"
+alignment = 1
+fit_to_longest_item = false
+item_count = 5
+popup/item_0/text = "stmmode_ratio"
+popup/item_0/id = 0
+popup/item_1/id = 0
+popup/item_1/disabled = true
+popup/item_1/separator = true
+popup/item_2/text = "stmmode_demand"
+popup/item_2/id = 1
+popup/item_3/id = 0
+popup/item_3/disabled = true
+popup/item_3/separator = true
+popup/item_4/text = "stmmode_graph"
+popup/item_4/id = 2
+script = ExtResource("6_3qqw1")
 
 [node name="MainContainer" type="VBoxContainer" parent="PanelContainer" index="0"]
 layout_mode = 2
@@ -31,7 +171,7 @@ theme_override_constants/separation = 10
 layout_mode = 2
 default_resource = "clock_speed"
 limit = -1.0
-exporting = [NodePath("../Output0/ResourceContainer")]
+exporting = [NodePath("../Output")]
 
 [node name="Progress" type="VBoxContainer" parent="PanelContainer/MainContainer" index="1"]
 layout_mode = 2
@@ -63,47 +203,12 @@ max_value = 1.0
 step = 0.001
 show_percentage = false
 
-[node name="Output0" type="HBoxContainer" parent="PanelContainer/MainContainer" index="2"]
-layout_mode = 2
-mouse_filter = 2
-theme_override_constants/separation = 5
-
-[node name="ResourceContainer" parent="PanelContainer/MainContainer/Output0" index="0" instance=ExtResource("5_lcoeh")]
+[node name="Output" parent="PanelContainer/MainContainer" index="2" instance=ExtResource("5_lcoeh")]
 layout_mode = 2
 script = ExtResource("5_3qqw1")
 default_resource = "clock_speed"
 limit = -1.0
 
-[node name="ButtonsMarginContainer" type="MarginContainer" parent="PanelContainer/MainContainer" index="3"]
-layout_mode = 2
-theme_override_constants/margin_left = -8
-theme_override_constants/margin_right = -8
-theme_override_constants/margin_bottom = -8
-
-[node name="ButtonsContainer" type="HBoxContainer" parent="PanelContainer/MainContainer/ButtonsMarginContainer" index="0"]
-layout_mode = 2
-mouse_filter = 2
-theme_override_constants/separation = 1
-
-[node name="ButtonDemandLogic" type="Button" parent="PanelContainer/MainContainer/ButtonsMarginContainer/ButtonsContainer" index="0"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_type_variation = &"WindowButtonBottom1"
-toggle_mode = true
-button_group = ExtResource("7_seswn")
-text = "Simple"
-script = ExtResource("7_skhyp")
-metadata/_custom_type_script = "uid://dfcqieer47kgq"
-
-[node name="ButtonGraphLogic" type="Button" parent="PanelContainer/MainContainer/ButtonsMarginContainer/ButtonsContainer" index="1"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_type_variation = &"WindowButtonBottom3"
-toggle_mode = true
-button_pressed = true
-button_group = ExtResource("7_seswn")
-text = "Graph"
-script = ExtResource("7_skhyp")
-metadata/_custom_type_script = "uid://dfcqieer47kgq"
-
+[connection signal="item_selected" from="OptionButton" to="." method="_on_option_button_item_selected"]
 [connection signal="resource_set" from="PanelContainer/MainContainer/Input" to="." method="_on_input_resource_set"]
+[connection signal="internal_error" from="PanelContainer/MainContainer/Output" to="." method="_on_output_internal_error"]

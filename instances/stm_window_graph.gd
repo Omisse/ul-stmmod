@@ -1,4 +1,4 @@
-class_name STMWindowGraph extends WindowGraph
+extends "res://mods-unpacked/kuuk-SmartThreadManager/instances/window_graph.gd"
 
 var manager: WindowBase
 var depth_to_keep: Dictionary[int, Dictionary]
