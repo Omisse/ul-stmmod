@@ -35,11 +35,12 @@ func _init(window: WindowBase) -> void:
     
 func set_containers(sources: Array = []) -> void:
     provided = inputs.keys().filter(sources.has)
-    dependent = inputs.keys().filter(func(n): return !provided.has(n))
+    dependent = inputs.keys().filter(func(n): return !provided.has(n) && _is_material(inputs[n]))
     for name in provided:
         icdata.erase(name)
     for name in dependent:
-        if !icdata.has(name): icdata[name] = STMContainerData.new(inputs[name])
+        if !icdata.has(name): 
+            icdata[name] = STMContainerData.new(inputs[name])
     
 func get_demand() -> float:
     if provided.is_empty():
@@ -67,6 +68,9 @@ func update():
     for cd in icdata.values():
         cd.update()
         
+func _is_material(c: ResourceContainer) -> bool:
+    return c.type == Utils.resource_types.MATERIAL || c.type == Utils.resource_types.MATERIAL_LIMITED
+
 
 class STMContainerData extends RefCounted:
     var container: ResourceContainer

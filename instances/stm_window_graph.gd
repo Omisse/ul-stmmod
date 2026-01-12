@@ -45,9 +45,9 @@ func _get_payload(name: String, allowed_names: Array):
 
 func _get_filtered_suppliers_count(node: String, allowed_names: Array, visited = []) -> int:
     var result = 0
-    if !nodes.has(node) || allowed_names.is_empty(): return result
-    visited.append(node)
+    if !nodes.has(node) || allowed_names.is_empty() || visited.has(node): return result
     var next_array = nodes[node].left.filter(allowed_names.has)
+    visited.append(node)
     result += next_array.size()
     for next_name in next_array:
         result += _get_filtered_suppliers_count(next_name, allowed_names, visited)
@@ -55,9 +55,9 @@ func _get_filtered_suppliers_count(node: String, allowed_names: Array, visited =
     
 func _get_filtered_receivers_count(node: String, allowed_names: Array, visited = []) -> int:
     var result = 0
-    if !nodes.has(node) || allowed_names.is_empty(): return result
-    visited.append(node)
+    if !nodes.has(node) || allowed_names.is_empty() || visited.has(node): return result
     var next_array = nodes[node].right.filter(allowed_names.has)
+    visited.append(node)
     result += next_array.size()
     for next_name in next_array:
         result += _get_filtered_receivers_count(next_name, allowed_names, visited)

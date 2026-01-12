@@ -8,7 +8,8 @@ extends WindowIndexed
 @onready var percent_label = $PanelContainer / MainContainer / Progress / ProgressContainer / PercentLabel
 @onready var mode_button = $OptionButton
 
-@export var default_mode = 1
+#would be export but modloader dont care
+var default_mode = 1
 
 var demand:
     get():

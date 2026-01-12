@@ -1,13 +1,13 @@
 [gd_scene load_steps=21 format=3 uid="uid://wocawew6ut7h"]
 
 [ext_resource type="PackedScene" uid="uid://b46qouyu3lx2m" path="res://scenes/windows/window_base.tscn" id="1_4h3qf"]
-[ext_resource type="Script" uid="uid://hsunco2uhdt8" path="res://mods-unpacked/kuuk-SmartThreadManager/scenes/windows/window_smart_thread_manager.gd" id="2_seswn"]
+[ext_resource type="Script" uid="uid://djhx0nq1ctlqi" path="res://mods-unpacked/kuuk-SmartThreadManager/scenes/windows/window_smart_thread_manager.gd" id="2_seswn"]
 [ext_resource type="Texture2D" uid="uid://mbrbl6fxx1" path="res://textures/icons/brain.png" id="3_jjcgv"]
 [ext_resource type="PackedScene" uid="uid://co5icrrrwscgg" path="res://scenes/input_container.tscn" id="4_2prua"]
-[ext_resource type="Texture2D" uid="uid://dmobmon8eig0y" path="res://mods-unpacked/kuuk-SmartThreadManager/textures/1x1.png" id="4_skhyp"]
-[ext_resource type="Script" uid="uid://dd3xkb5vj0x84" path="res://mods-unpacked/kuuk-SmartThreadManager/scripts/smart_resource_container.gd" id="5_3qqw1"]
+[ext_resource type="Texture2D" uid="uid://cfo6rfoa2qcdb" path="res://mods-unpacked/kuuk-SmartThreadManager/textures/1x1.png" id="4_skhyp"]
+[ext_resource type="Script" uid="uid://c6l221rxjulpt" path="res://mods-unpacked/kuuk-SmartThreadManager/scripts/smart_resource_container.gd" id="5_3qqw1"]
 [ext_resource type="PackedScene" uid="uid://b4efojcll7i7" path="res://scenes/output_container.tscn" id="5_lcoeh"]
-[ext_resource type="Script" uid="uid://cp57snb35aqhq" path="res://mods-unpacked/kuuk-SmartThreadManager/scripts/option_desktop_button.gd" id="6_3qqw1"]
+[ext_resource type="Script" uid="uid://cp7ejmjkt6sfr" path="res://mods-unpacked/kuuk-SmartThreadManager/scripts/option_desktop_button.gd" id="6_3qqw1"]
 [ext_resource type="FontVariation" uid="uid://o1lo3q4dynmn" path="res://themes/fonts/main.tres" id="8_mgogo"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nuec8"]
@@ -131,7 +131,6 @@ stmOptionButton/styles/pressed = SubResource("StyleBoxFlat_vv18v")
 [node name="WindowBase" instance=ExtResource("1_4h3qf")]
 offset_bottom = 50.0
 script = ExtResource("2_seswn")
-default_mode = 1
 window = "smart_thread_manager"
 
 [node name="Icon" parent="TitlePanel/TitleContainer" index="0"]
