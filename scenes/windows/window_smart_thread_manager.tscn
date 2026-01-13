@@ -145,6 +145,7 @@ size_flags_vertical = 3
 theme = SubResource("Theme_6kkdg")
 theme_type_variation = &"stmOptionButton"
 alignment = 1
+selected = 0
 fit_to_longest_item = false
 item_count = 5
 popup/item_0/text = "stmmode_ratio"
@@ -210,4 +211,3 @@ limit = -1.0
 
 [connection signal="item_selected" from="OptionButton" to="." method="_on_option_button_item_selected"]
 [connection signal="resource_set" from="PanelContainer/MainContainer/Input" to="." method="_on_input_resource_set"]
-[connection signal="internal_error" from="PanelContainer/MainContainer/Output" to="." method="_on_output_internal_error"]

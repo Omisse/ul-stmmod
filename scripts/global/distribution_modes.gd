@@ -138,7 +138,7 @@ static func _set_consumers_graph(remaining: float, state: Dictionary) -> float:
         
         
         demand = start_remaining/multi if multi < 1.0 else start_remaining-remaining
-        remaining = 0.0 if start_remaining/demand < 1.0 else clampf(remaining, 0.0, INF)
+        remaining = 0.0 if multi < 1.0 else clampf(remaining, 0.0, INF)
     
     state.demand = demand
     state.multiplier = multi

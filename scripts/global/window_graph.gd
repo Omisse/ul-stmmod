@@ -1,5 +1,7 @@
 extends Node
 
+const STMUtils = preload("res://mods-unpacked/kuuk-SmartThreadManager/scripts/global/stm_utils.gd")
+
 var LOG_NAME = "kuuk:WindowGraph"
 
 signal changed
@@ -172,7 +174,7 @@ class NodeData extends RefCounted:
 
     static func get_inputs_as_window(source: WindowBase) -> Array:
         if source:
-            return source.containers.map(func(c): return c.input).filter(func(i): return i != null).map(get_parent_window)
+            return source.containers.map(func(c): return c.input).filter(func(i): return i != null).map(STMUtils.get_parent_window)
         else:
             ModLoaderLog.error("Window doesn't exist.", LOG_NAME+":_get_inputs_as_window")
             return []
@@ -181,21 +183,11 @@ class NodeData extends RefCounted:
         if source:
             var result = []
             for array in source.containers.map(func(c): return c.outputs).filter(func(a): return a != null && a.size() > 0):
-                result.append_array(array.map(get_parent_window).filter(func(w): return w!=null))
+                result.append_array(array.map(STMUtils.get_parent_window).filter(func(w): return w!=null))
             return result
         else:
             ModLoaderLog.error("Window doesn't exist.", LOG_NAME+":_get_outputs_as_window")
             return []
-    
-    static func get_parent_window(n: Node) -> WindowBase:
-        if n == null : return null        
-        if !n.has_meta("parent_window"):
-            var window = n
-            while window && !window.is_in_group("window"):
-                window = window.get_parent()
-            n.set_meta("parent_window", window)
-        return n.get_meta("parent_window", null)
-
         
         
     func _init(window: WindowBase) -> void:

@@ -1,7 +1,6 @@
 extends WindowIndexed
 
 @onready var input = $PanelContainer / MainContainer / Input
-#kinda need to remove Output0, but it will possibly break a thing or two on clients
 @onready var output = $PanelContainer / MainContainer / Output
 @onready var progress_bar = $PanelContainer / MainContainer / Progress / ProgressBar
 @onready var demand_label = $PanelContainer / MainContainer / Progress / ProgressContainer / DemandsLabel
@@ -58,10 +57,3 @@ func save() -> Dictionary:
 
 func _on_option_button_item_selected(index: int) -> void:
     container_mode = mode_button.get_item_id(index)
-
-
-func _on_output_internal_error() -> void:
-    if !closing:
-        for container in containers:
-            container.close()
-        super.close()

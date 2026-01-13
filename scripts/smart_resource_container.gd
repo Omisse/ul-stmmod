@@ -1,16 +1,9 @@
 class_name SmartResourceContainer extends ResourceContainer
 
-signal internal_error
-var is_valid = true:
-    set(value):
-        if !value:
-            #i want to react on it from window, yet it's not ready atm
-            _set_error_timer()
-
-var STMWindowGraph
-var STMWindowData
-var STMDistribution
-var STMUtils
+const STMWindowGraph = preload("res://mods-unpacked/kuuk-SmartThreadManager/scripts/global/stm_window_graph.gd")
+const STMWindowData = preload("res://mods-unpacked/kuuk-SmartThreadManager/scripts/global/stm_window_data.gd")
+const STMDistribution = preload("res://mods-unpacked/kuuk-SmartThreadManager/scripts/global/distribution_modes.gd")
+const STMUtils = preload("res://mods-unpacked/kuuk-SmartThreadManager/scripts/global/stm_utils.gd")
 
 var demand: float = 0.0
 var graph = null
@@ -35,7 +28,6 @@ var distribution_mode: STMContainerMode = STMContainerMode.CM_RATIO:
         
 var distribution_callable: Callable
 
-const main_node_path:NodePath = "/root/ModLoader/kuuk-SmartThreadManager"
 
 enum STMContainerMode {
     CM_RATIO  =0,
@@ -45,12 +37,7 @@ enum STMContainerMode {
 
 func _ready() -> void:
     super()
-    var main_node = get_node(main_node_path)
-    if !main_node || !is_instance_valid(main_node):
-        ModLoaderLog.error("Mod main node invalid", "kuuk:STM:SmartResourceContainer")
-        is_valid = false
-    else:
-        is_valid = _get_mod_global_classes(main_node)
+
         
     data_changed = true
 
@@ -63,8 +50,6 @@ func update_connections() -> void:
     if (!should_tick()): tick()
     
 func tick() -> void:
-    if !is_valid:
-        return
     # update must _always_ happen before the tick
     if data_changed:
         _update_data()
@@ -172,25 +157,3 @@ func _get_demands(state:Dictionary) -> Dictionary:
     for cname in state.wdata.keys():
         out[cname] = state.wdata[cname].get_demand()
     return out
-    
-
-func _get_mod_global_classes(main_node: Node) -> bool:
-    STMWindowGraph = main_node.instances.get("STMWindowGraph")
-    STMWindowData = main_node.instances.get("WindowData")
-    STMDistribution = main_node.instances.get("Distribution")
-    STMUtils = main_node.instances.get("Utils")
-    return STMWindowGraph != null\
-            && STMWindowData != null\
-            && STMDistribution != null\
-            && STMUtils != null
-    
-
-func _set_error_timer() -> void:
-    var timer = Timer.new()
-    timer.ignore_time_scale = true
-    timer.one_shot = false
-    timer.autostart = true
-    timer.timeout.connect(internal_error.emit)
-    ModLoaderLog.error("Internal error", "kuuk:STM:SmartResourceContainer")
-    add_child(timer)
-    
