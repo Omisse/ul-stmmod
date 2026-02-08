@@ -1,9 +1,9 @@
 extends ResourceContainer
 
-const STMWindowGraph = preload("res://mods-unpacked/kuuk-SmartThreadManager/scripts/global/stm_window_graph.gd")
-const STMWindowData = preload("res://mods-unpacked/kuuk-SmartThreadManager/scripts/global/stm_window_data.gd")
-const STMDistribution = preload("res://mods-unpacked/kuuk-SmartThreadManager/scripts/global/distribution_modes.gd")
-const STMUtils = preload("res://mods-unpacked/kuuk-SmartThreadManager/scripts/global/stm_utils.gd")
+const STMWindowGraph = preload("res://mods-unpacked/kuuk-SmartGPUManager/scripts/global/stm_window_graph.gd")
+const STMWindowData = preload("res://mods-unpacked/kuuk-SmartGPUManager/scripts/global/stm_window_data.gd")
+const STMDistribution = preload("res://mods-unpacked/kuuk-SmartGPUManager/scripts/global/distribution_modes.gd")
+const STMUtils = preload("res://mods-unpacked/kuuk-SmartGPUManager/scripts/global/stm_utils.gd")
 
 @export var use_count: bool = false
 @export var distribution_mode: STMContainerMode = STMContainerMode.CM_RATIO:

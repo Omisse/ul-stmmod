@@ -12,7 +12,7 @@ var demand:
     get():
         return output.demand
         
-var container_mode = 1:
+var container_mode = 0:
     get:
         if "distribution_mode" in output:
             return output.get("distribution_mode")
@@ -43,7 +43,6 @@ var use_count: bool = false:
             return
         if "use_count" in output:
             output.use_count = value
-        else: ModLoaderLog.debug("wtf?", "kuuk:STM:STMWindow")
     
 func process(delta: float) -> void :
     output.count = input.count
@@ -60,14 +59,14 @@ func _on_input_resource_set() -> void :
 
 func export() -> Dictionary:
     var dict = super()
-    dict["filename"] = "../../".path_join(ModLoaderMod.get_mod_data("kuuk-SmartThreadManager").dir_path.trim_prefix("res://")).path_join("scenes/windows/window_smart_thread_manager.tscn")
+    dict["filename"] = "../../".path_join(ModLoaderMod.get_mod_data("kuuk-SmartGPUManager").dir_path.trim_prefix("res://")).path_join("scenes/windows/window_smart_gpu_manager.tscn")
     dict["container_mode"] = container_mode
     dict["use_count"] = use_count
     return dict
 
 func save() -> Dictionary:
     var dict = super()
-    dict["filename"] = "../../".path_join(ModLoaderMod.get_mod_data("kuuk-SmartThreadManager").dir_path.trim_prefix("res://")).path_join("scenes/windows/window_smart_thread_manager.tscn")
+    dict["filename"] = "../../".path_join(ModLoaderMod.get_mod_data("kuuk-SmartGPUManager").dir_path.trim_prefix("res://")).path_join("scenes/windows/window_smart_gpu_manager.tscn")
     dict["container_mode"] = container_mode
     dict["use_count"] = use_count
     return dict

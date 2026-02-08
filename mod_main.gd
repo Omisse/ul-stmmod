@@ -1,7 +1,7 @@
 extends Node
 
-const MOD_DIR := "kuuk-SmartThreadManager"
-const LOG_NAME := "kuuk:STM:Main"
+const MOD_DIR := "kuuk-SmartGPUManager"
+const LOG_NAME := "kuuk:SGM:Main"
 
 var mod_dir_path := ""
 var translations_dir_path := ""
@@ -30,7 +30,7 @@ func _ready() -> void:
         return
     _add_to_data()
     
-    ModLoaderLog.info(tr("MODNAME_READY_TEXT"), LOG_NAME)
+    ModLoaderLog.info(tr("MODNAME_READY_TEXT_GPU"), LOG_NAME)
 
 func _add_translations() -> void:
     translations_dir_path = mod_dir_path.path_join("translations")
@@ -45,20 +45,20 @@ func _load_instances() -> void:
     
 
 func _add_to_data() -> void:
-    const entry_name = "smart_thread_manager"
-    const node_name = "window_smart_thread_manager"
+    const entry_name = "smart_gpu_manager"
+    const node_name = "window_smart_gpu_manager"
     
     if !Data.windows.has(entry_name):
         Data.windows[entry_name] = {
             "name": node_name,
             "icon": "brain",
-            "description": "window_stm_desc",
+            "description": "window_sgm_desc",
             "scene": windows_dir_path.path_join(node_name),
             "group": "",
-            "category": "cpu",
+            "category": "gpu",
             "sub_category": "management",
             "level": 0,
-            "requirement": "perk.thread_manager",
+            "requirement": "research.gpu_manager",
             "hidden": true,
             "attributes":{
                 "limit": -1
@@ -74,11 +74,11 @@ func _add_to_data() -> void:
             "icon": "brain",
             "type": 1,
             "entries":[
-                {"text": "guide_"+node_name, "level": 0, "requirement": "perk.thread_manager"},
-                {"text": "guide_"+node_name+"_chaining", "level": 0, "requirement": "perk.thread_manager"},
-                {"text": "guide_"+node_name+"_ratio", "level": 0, "requirement": "perk.thread_manager"},
-                {"text": "guide_"+node_name+"_demand", "level": 0, "requirement": "perk.thread_manager"},
-                {"text": "guide_"+node_name+"_graph", "level": 0, "requirement": "perk.thread_manager"},
+                {"text": "guide_"+node_name, "level": 0, "requirement": "research.gpu_manager"},
+                {"text": "guide_window_smart_thread_manager_chaining", "level": 0, "requirement": "research.gpu_manager"},
+                {"text": "guide_window_smart_thread_manager_ratio", "level": 0, "requirement": "research.gpu_manager"},
+                {"text": "guide_window_smart_thread_manager_demand", "level": 0, "requirement": "research.gpu_manager"},
+                {"text": "guide_window_smart_thread_manager_graph", "level": 0, "requirement": "research.gpu_manager"},
             ]
         }
     else:

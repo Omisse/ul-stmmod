@@ -1,6 +1,6 @@
 extends Node
 
-const STMUtils = preload("res://mods-unpacked/kuuk-SmartThreadManager/scripts/global/stm_utils.gd")
+const STMUtils = preload("res://mods-unpacked/kuuk-SmartGPUManager/scripts/global/stm_utils.gd")
 
 var LOG_NAME = "kuuk:WindowGraph"
 
