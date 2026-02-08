@@ -23,7 +23,7 @@ func release_filter_depth(caller:Object, depth:int):
     depth_to_keep[depth].erase(caller)
     if depth_to_keep[depth].is_empty():
         depth_to_keep.erase(depth)
-        filtered[depth].erase(depth)
+        filtered.erase(depth)
     return true
     
 func _on_internal_update() -> void:

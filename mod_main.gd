@@ -18,8 +18,6 @@ func _init() -> void:
     var version = JSON.parse_string(FileAccess.get_file_as_string(mod_dir_path+"/manifest.json")).version_number
     if version == null: version = "unknown"
     
-    _load_instances()
-    
     ModLoaderLog.success("Initialized, version: %s" % version, LOG_NAME)
 
 
@@ -35,14 +33,7 @@ func _ready() -> void:
 func _add_translations() -> void:
     translations_dir_path = mod_dir_path.path_join("translations")
     for name in Array(DirAccess.get_files_at(translations_dir_path)).filter(func(s: String): return s.ends_with(".translation")):
-        ModLoaderMod.add_translation(translations_dir_path.path_join(name))
-        
-func _load_instances() -> void:
-    var names = JSON.parse_string(FileAccess.get_file_as_string(mod_dir_path.path_join("data/instances.json")))
-    for name in names.keys():
-        instances[name] = load(mod_dir_path.path_join(names[name]))
-        
-    
+        ModLoaderMod.add_translation(translations_dir_path.path_join(name))    
 
 func _add_to_data() -> void:
     const entry_name = "smart_thread_manager"
