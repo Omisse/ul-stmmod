@@ -22,16 +22,18 @@ func _init(window: WindowBase) -> void:
     for container in containers:
         inputs.set(container.id, container)
     
+    set_containers()
+    
     if "demand" in window:
         role = STMWindowRoles.STM_MANAGER
-    elif "goal" in window:
+    elif "goal" in window && !dependent.is_empty():
         role = STMWindowRoles.STM_CONSUMER
     elif window.is_in_group("window"):
         role = STMWindowRoles.STM_STORAGE
     else:
         role = STMWindowRoles.STM_ARTIFACT
     
-    set_containers()
+    
     
 func set_containers(sources: Array = []) -> void:
     provided = inputs.keys().filter(sources.has)

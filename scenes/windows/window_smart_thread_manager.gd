@@ -43,7 +43,6 @@ var use_count: bool = false:
             return
         if "use_count" in output:
             output.use_count = value
-        else: ModLoaderLog.debug("wtf?", "kuuk:STM:STMWindow")
     
 func process(delta: float) -> void :
     output.count = input.count
