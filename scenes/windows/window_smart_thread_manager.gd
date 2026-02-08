@@ -43,7 +43,14 @@ var use_count: bool = false:
             return
         if "use_count" in output:
             output.use_count = value
-    
+
+func _ready() -> void:
+    super()
+    if "use_count" in output:
+        output.use_count = use_count
+    if "distribution_mode" in output:
+        output.distribution_mode = container_mode    
+
 func process(delta: float) -> void :
     output.count = input.count
     var progress_value = input.count / demand if !is_zero_approx(demand) else 0.0

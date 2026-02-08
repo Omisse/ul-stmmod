@@ -1,15 +1,15 @@
 [gd_scene load_steps=22 format=3 uid="uid://wocawew6ut7h"]
 
 [ext_resource type="PackedScene" uid="uid://b46qouyu3lx2m" path="res://scenes/windows/window_base.tscn" id="1_4h3qf"]
-[ext_resource type="Script" uid="uid://bqd8j84w8hjw2" path="res://mods-unpacked/kuuk-SmartGPUManager/scenes/windows/window_smart_thread_manager.gd" id="2_seswn"]
+[ext_resource type="Script" uid="uid://cynmx77k4ne7l" path="res://mods-unpacked/kuuk-SmartThreadManager/scenes/windows/window_smart_thread_manager.gd" id="2_xeqvc"]
 [ext_resource type="Texture2D" uid="uid://mbrbl6fxx1" path="res://textures/icons/brain.png" id="3_jjcgv"]
 [ext_resource type="PackedScene" uid="uid://co5icrrrwscgg" path="res://scenes/input_container.tscn" id="4_2prua"]
 [ext_resource type="Texture2D" uid="uid://cfo6rfoa2qcdb" path="res://mods-unpacked/kuuk-SmartGPUManager/textures/1x1.png" id="4_skhyp"]
-[ext_resource type="Script" uid="uid://bvxyvgircxrg7" path="res://mods-unpacked/kuuk-SmartGPUManager/scripts/smart_resource_container.gd" id="5_3qqw1"]
 [ext_resource type="PackedScene" uid="uid://b4efojcll7i7" path="res://scenes/output_container.tscn" id="5_lcoeh"]
-[ext_resource type="Script" uid="uid://cp7ejmjkt6sfr" path="res://mods-unpacked/kuuk-SmartGPUManager/scripts/option_desktop_button.gd" id="6_3qqw1"]
+[ext_resource type="Script" uid="uid://cbf3jbt2xle1n" path="res://mods-unpacked/kuuk-SmartThreadManager/scripts/option_desktop_button.gd" id="6_1lpg8"]
 [ext_resource type="FontVariation" uid="uid://o1lo3q4dynmn" path="res://themes/fonts/main.tres" id="8_mgogo"]
-[ext_resource type="Script" uid="uid://st4mly07srhb" path="res://mods-unpacked/kuuk-SmartGPUManager/scripts/toggle_desktop_button.gd" id="10_xeqvc"]
+[ext_resource type="Script" uid="uid://di7m75un41hcu" path="res://mods-unpacked/kuuk-SmartThreadManager/scripts/smart_resource_container.gd" id="9_jbbn5"]
+[ext_resource type="Script" uid="uid://427a4qx37b4k" path="res://mods-unpacked/kuuk-SmartThreadManager/scripts/toggle_desktop_button.gd" id="10_quws3"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nuec8"]
 bg_color = Color(0.270588, 0.333333, 0.458824, 1)
@@ -131,7 +131,7 @@ stmOptionButton/styles/pressed = SubResource("StyleBoxFlat_vv18v")
 
 [node name="WindowBase" instance=ExtResource("1_4h3qf")]
 offset_bottom = 50.0
-script = ExtResource("2_seswn")
+script = ExtResource("2_xeqvc")
 window = "smart_thread_manager"
 
 [node name="Icon" parent="TitlePanel/TitleContainer" index="0"]
@@ -155,7 +155,7 @@ popup/item_1/text = "stmmode_demand"
 popup/item_1/id = 1
 popup/item_2/text = "stmmode_graph"
 popup/item_2/id = 2
-script = ExtResource("6_3qqw1")
+script = ExtResource("6_1lpg8")
 
 [node name="MainContainer" type="VBoxContainer" parent="PanelContainer" index="0"]
 layout_mode = 2
@@ -200,7 +200,7 @@ show_percentage = false
 
 [node name="Output" parent="PanelContainer/MainContainer" index="2" instance=ExtResource("5_lcoeh")]
 layout_mode = 2
-script = ExtResource("5_3qqw1")
+script = ExtResource("9_jbbn5")
 use_count = false
 distribution_mode = 0
 default_resource = "clock_speed"
@@ -210,7 +210,7 @@ limit = -1.0
 layout_mode = 2
 theme_type_variation = &"ItemButton"
 text = "stm_cps_text"
-script = ExtResource("10_xeqvc")
+script = ExtResource("10_quws3")
 
 [connection signal="item_selected" from="OptionButton" to="." method="_on_option_button_item_selected"]
 [connection signal="resource_set" from="PanelContainer/MainContainer/Input" to="." method="_on_input_resource_set"]
