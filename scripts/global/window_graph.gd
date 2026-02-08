@@ -1,4 +1,4 @@
-extends Node
+extends RefCounted
 
 const STMUtils = preload("res://mods-unpacked/kuuk-SmartThreadManager/scripts/global/stm_utils.gd")
 
