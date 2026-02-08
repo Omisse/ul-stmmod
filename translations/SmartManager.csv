@@ -14,7 +14,7 @@ stm_cps_text,Base: count/s
 stm_count_text,Base: count
 MODNAME_READY_TEXT_GPU,Smart GPU Manager - One day i will merge this.
 window_smart_gpu_manager,Smart GPU Manager
-window_sgm_desc,Uneven distributor that prioritizes clock-consumers over synchronizers and processing sellers.
+window_sgm_desc,Uneven distributor that prioritizes clock-consumers over synchronizers and miners.
 guide_window_smart_gpu_manager,"Distributes GPU speed between connected nodes.[br]Bar in the middle represents [u][l]approximate[/l][/u] [l]supply/demand[/l] ratio and might be quite different depending on current distribution mode.[br]Distribution mode affects the behaviour of smart manager:[br][l]ratio[/l] one would fit best for lots of independent consumers,[br][l]graph[/l] achieves unmatched efficiency on long lines,[br][l]demand[/l] is faster than graph and is good enough for most linear cases."
 ,
 ,

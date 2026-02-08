@@ -80,7 +80,9 @@ static func _set_targets_demand(value: float,  state: Dictionary):
             var change_rate = remap(absf(suggested-old)/max if max > 0.0 else 1.0, 0.0, 1.0, 1e-14, 1e-1)
             var amount = min(remaining, suggested)
             
-            if amount == remaining && name != targets.back():
+            if amount == remaining:
+                if (name != targets.back()):
+                    amount*=0.9
                 key_multipliers[name] = clampf(multiplier-multiplier*change_rate, 1e-14, 1.0)
             else:
                 key_multipliers[name] = clampf(multiplier+multiplier*change_rate, 1e-14, 1.0)
