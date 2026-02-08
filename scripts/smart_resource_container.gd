@@ -103,7 +103,6 @@ func _update_graph(state: Dictionary, need_graph: bool = true) -> void:
     if !need_graph && graph != null:
         graph.changed.disconnect(_on_graph_changed)
         graph.release_filter_depth(self, 0)
-        graph.free()
         graph = null
         
     if need_graph && !graph:
@@ -165,5 +164,4 @@ func _get_demands(state:Dictionary) -> Dictionary:
 func _exit_tree() -> void:
     if (graph != null):
         graph.release_filter_depth(self, 0)
-        graph.free()
         graph = null

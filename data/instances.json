@@ -1,7 +1,0 @@
-{
-    "WindowGraph": "instances/window_graph.gd",
-    "Utils": "instances/stm_utils.gd",
-    "Distribution": "instances/distribution_modes.gd",
-    "WindowData": "instances/stm_window_data.gd",
-    "STMWindowGraph": "instances/stm_window_graph.gd",
-}
