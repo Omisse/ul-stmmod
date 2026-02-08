@@ -165,13 +165,13 @@ static func _set_storages(remaining: float, state: Dictionary) -> void:
         
 
 static func _state_average_demands(state: Dictionary) -> void:
-    const step = 0.1
+    const step = 0.5
     
     var old = state.get_or_add("old_demands", {})
     var current = state.get_or_add("demands", {})
     
     for key in current:
-        current[key] = old.get_or_add(key, 0.0)+(current[key]-old.get_or_add(key, 0.0))*step
+        current[key] = lerpf(old.get_or_add(key, 0.0), current[key], step)
         old[key] = current[key]
     
 
