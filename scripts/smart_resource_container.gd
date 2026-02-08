@@ -14,7 +14,7 @@ const STMUtils = preload("res://mods-unpacked/kuuk-SmartGPUManager/scripts/globa
         data_changed = true
 
 var demand: float = 0.0
-var graph = null
+var graph:STMWindowGraph = null
 
 var state:Dictionary = {
     "wdata": {},
@@ -102,6 +102,8 @@ func _update_windows(state: Dictionary) -> void:
 func _update_graph(state: Dictionary, need_graph: bool = true) -> void:
     if !need_graph && graph != null:
         graph.changed.disconnect(_on_graph_changed)
+        graph.release_filter_depth(self, 0)
+        graph.free()
         graph = null
         
     if need_graph && !graph:
@@ -159,3 +161,9 @@ func _get_demands(state:Dictionary) -> Dictionary:
     for cname in state.wdata.keys():
         out[cname] = state.wdata[cname].get_count_demand() if use_count else state.wdata[cname].get_demand()
     return out
+    
+func _exit_tree() -> void:
+    if (graph != null):
+        graph.release_filter_depth(self, 0)
+        graph.free()
+        graph = null
