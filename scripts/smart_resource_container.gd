@@ -1,9 +1,17 @@
-class_name SmartResourceContainer extends ResourceContainer
+extends ResourceContainer
 
 const STMWindowGraph = preload("res://mods-unpacked/kuuk-SmartThreadManager/scripts/global/stm_window_graph.gd")
 const STMWindowData = preload("res://mods-unpacked/kuuk-SmartThreadManager/scripts/global/stm_window_data.gd")
 const STMDistribution = preload("res://mods-unpacked/kuuk-SmartThreadManager/scripts/global/distribution_modes.gd")
 const STMUtils = preload("res://mods-unpacked/kuuk-SmartThreadManager/scripts/global/stm_utils.gd")
+
+@export var use_count: bool = false
+@export var distribution_mode: STMContainerMode = STMContainerMode.CM_RATIO:
+    get:
+        return distribution_mode
+    set(value):
+        distribution_mode = value
+        data_changed = true
 
 var demand: float = 0.0
 var graph = null
@@ -15,18 +23,14 @@ var state:Dictionary = {
     "storages": [],
     "storage_connections": 0
 }
-var static_keys = ["wdata"]
-        
+
+var state_keep = ["wdata"]        
 var data_changed = false
 
-var distribution_mode: STMContainerMode = STMContainerMode.CM_RATIO:
-    get:
-        return distribution_mode
-    set(value):
-        distribution_mode = value
-        data_changed = true
+
         
 var distribution_callable: Callable
+
 
 
 enum STMContainerMode {
@@ -37,8 +41,6 @@ enum STMContainerMode {
 
 func _ready() -> void:
     super()
-
-        
     data_changed = true
 
 func _on_graph_changed() -> void:
@@ -47,7 +49,6 @@ func _on_graph_changed() -> void:
 func update_connections() -> void:
     super()
     data_changed = true
-    if (!should_tick()): tick()
     
 func tick() -> void:
     # update must _always_ happen before the tick
@@ -81,7 +82,7 @@ func _update_callable(mode: STMContainerMode):
 
 func _clear_state():
     for key in state.keys():
-        if !static_keys.has(key):
+        if !state_keep.has(key):
             state.erase(key)
 
     
@@ -149,11 +150,12 @@ func _wdata_set_graph_roles(state: Dictionary) -> void:
     state.line_suppliers = state.consumers\
             .filter(func(n: StringName):\
                 return graph.filtered[0][n].suppliers == 0)
+    state.line_suppliers.append_array(state.managers.filter(func(n): return !state.line_suppliers.has(n)))
     state.line_receivers = state.consumers\
             .filter(func(n: StringName): return !state.line_suppliers.has(n))
             
 func _get_demands(state:Dictionary) -> Dictionary:
     var out = {}
     for cname in state.wdata.keys():
-        out[cname] = state.wdata[cname].get_demand()
+        out[cname] = state.wdata[cname].get_count_demand() if use_count else state.wdata[cname].get_demand()
     return out

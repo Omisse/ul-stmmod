@@ -48,6 +48,13 @@ func get_demand() -> float:
     if role == STMWindowRoles.STM_MANAGER:
         return window.demand
     return get_min_prod()*get_goal()
+    
+func get_count_demand() -> float:
+    if provided.is_empty():
+        return 0.0
+    if role == STMWindowRoles.STM_MANAGER:
+        return window.demand
+    return get_min_count()*get_goal()
 
 func set_count(value: float) -> void:
     var size = provided.size()
@@ -60,6 +67,14 @@ func get_min_prod() -> float:
     if dependent.size() == 1:
         return icdata[dependent[0]].get_prod()
     return dependent.map(func(name): return icdata[name].get_prod()).reduce(min)
+    
+func get_min_count() -> float:
+    if dependent.is_empty():
+        return 0.0
+    if dependent.size() == 1:
+        return icdata[dependent[0]].get_count()
+    return dependent.map(func(name): return icdata[name].get_count()).reduce(min)
+    
 
 func get_goal() -> float:
     return window.goal if role == STMWindowRoles.STM_CONSUMER else 0.0
@@ -82,6 +97,9 @@ class STMContainerData extends RefCounted:
     
     func get_prod() -> float:
         return multiplier*container.production
+    
+    func get_count() -> float:
+        return multiplier*container.count
     
     func _get_multi() -> float:
         var divisor = container.required if !is_zero_approx(container.required) else 1.0

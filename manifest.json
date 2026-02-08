@@ -11,7 +11,8 @@
 				"2.0.17",
 				"2.0.19",
 				"2.0.20",
-				"2.0.21"
+				"2.0.21",
+				"2.1.8"
 			],
 			"compatible_mod_loader_version": [
 				"7.0.0",
@@ -33,6 +34,6 @@
 	},
 	"name": "SmartThreadManager",
 	"namespace": "kuuk",
-	"version_number": "2.1.2",
+	"version_number": "2.1.3",
 	"website_url": "https://github.com/Omisse/ul-stmmod"
 }

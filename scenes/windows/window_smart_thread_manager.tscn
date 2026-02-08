@@ -1,14 +1,15 @@
-[gd_scene load_steps=21 format=3 uid="uid://wocawew6ut7h"]
+[gd_scene load_steps=22 format=3 uid="uid://wocawew6ut7h"]
 
 [ext_resource type="PackedScene" uid="uid://b46qouyu3lx2m" path="res://scenes/windows/window_base.tscn" id="1_4h3qf"]
-[ext_resource type="Script" uid="uid://djhx0nq1ctlqi" path="res://mods-unpacked/kuuk-SmartThreadManager/scenes/windows/window_smart_thread_manager.gd" id="2_seswn"]
+[ext_resource type="Script" uid="uid://bqd8j84w8hjw2" path="res://mods-unpacked/kuuk-SmartThreadManager/scenes/windows/window_smart_thread_manager.gd" id="2_seswn"]
 [ext_resource type="Texture2D" uid="uid://mbrbl6fxx1" path="res://textures/icons/brain.png" id="3_jjcgv"]
 [ext_resource type="PackedScene" uid="uid://co5icrrrwscgg" path="res://scenes/input_container.tscn" id="4_2prua"]
 [ext_resource type="Texture2D" uid="uid://cfo6rfoa2qcdb" path="res://mods-unpacked/kuuk-SmartThreadManager/textures/1x1.png" id="4_skhyp"]
-[ext_resource type="Script" uid="uid://c6l221rxjulpt" path="res://mods-unpacked/kuuk-SmartThreadManager/scripts/smart_resource_container.gd" id="5_3qqw1"]
+[ext_resource type="Script" uid="uid://bvxyvgircxrg7" path="res://mods-unpacked/kuuk-SmartThreadManager/scripts/smart_resource_container.gd" id="5_3qqw1"]
 [ext_resource type="PackedScene" uid="uid://b4efojcll7i7" path="res://scenes/output_container.tscn" id="5_lcoeh"]
 [ext_resource type="Script" uid="uid://cp7ejmjkt6sfr" path="res://mods-unpacked/kuuk-SmartThreadManager/scripts/option_desktop_button.gd" id="6_3qqw1"]
 [ext_resource type="FontVariation" uid="uid://o1lo3q4dynmn" path="res://themes/fonts/main.tres" id="8_mgogo"]
+[ext_resource type="Script" uid="uid://st4mly07srhb" path="res://mods-unpacked/kuuk-SmartThreadManager/scripts/toggle_desktop_button.gd" id="10_xeqvc"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nuec8"]
 bg_color = Color(0.270588, 0.333333, 0.458824, 1)
@@ -147,19 +148,13 @@ theme_type_variation = &"stmOptionButton"
 alignment = 1
 selected = 0
 fit_to_longest_item = false
-item_count = 5
+item_count = 3
 popup/item_0/text = "stmmode_ratio"
 popup/item_0/id = 0
-popup/item_1/id = 0
-popup/item_1/disabled = true
-popup/item_1/separator = true
-popup/item_2/text = "stmmode_demand"
-popup/item_2/id = 1
-popup/item_3/id = 0
-popup/item_3/disabled = true
-popup/item_3/separator = true
-popup/item_4/text = "stmmode_graph"
-popup/item_4/id = 2
+popup/item_1/text = "stmmode_demand"
+popup/item_1/id = 1
+popup/item_2/text = "stmmode_graph"
+popup/item_2/id = 2
 script = ExtResource("6_3qqw1")
 
 [node name="MainContainer" type="VBoxContainer" parent="PanelContainer" index="0"]
@@ -206,8 +201,17 @@ show_percentage = false
 [node name="Output" parent="PanelContainer/MainContainer" index="2" instance=ExtResource("5_lcoeh")]
 layout_mode = 2
 script = ExtResource("5_3qqw1")
+use_count = false
+distribution_mode = 0
 default_resource = "clock_speed"
 limit = -1.0
 
+[node name="UseCountButton" type="Button" parent="PanelContainer/MainContainer" index="3"]
+layout_mode = 2
+theme_type_variation = &"ItemButton"
+text = "stm_use_count_btn"
+script = ExtResource("10_xeqvc")
+
 [connection signal="item_selected" from="OptionButton" to="." method="_on_option_button_item_selected"]
 [connection signal="resource_set" from="PanelContainer/MainContainer/Input" to="." method="_on_input_resource_set"]
+[connection signal="toggled" from="PanelContainer/MainContainer/UseCountButton" to="." method="_on_use_count_button_toggled"]
