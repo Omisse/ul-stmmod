@@ -1,12 +1,12 @@
-[gd_scene load_steps=22 format=3 uid="uid://wocawew6ut7h"]
+[gd_scene load_steps=23 format=3 uid="uid://wocawew6ut7h"]
 
 [ext_resource type="PackedScene" uid="uid://b46qouyu3lx2m" path="res://scenes/windows/window_base.tscn" id="1_4h3qf"]
 [ext_resource type="Script" uid="uid://bsc4mrf5txn1s" path="res://mods-unpacked/kuuk-SmartThreadManager/scenes/windows/window_smart_thread_manager.gd" id="2_xeqvc"]
 [ext_resource type="Texture2D" uid="uid://mbrbl6fxx1" path="res://textures/icons/brain.png" id="3_jjcgv"]
 [ext_resource type="PackedScene" uid="uid://co5icrrrwscgg" path="res://scenes/input_container.tscn" id="4_2prua"]
-[ext_resource type="Texture2D" uid="uid://e07j7tof5wcq" path="res://mods-unpacked/kuuk-SmartGPUManager/textures/1x1.png" id="4_skhyp"]
 [ext_resource type="PackedScene" uid="uid://b4efojcll7i7" path="res://scenes/output_container.tscn" id="5_lcoeh"]
 [ext_resource type="Script" uid="uid://cbf3jbt2xle1n" path="res://mods-unpacked/kuuk-SmartThreadManager/scripts/option_desktop_button.gd" id="6_1lpg8"]
+[ext_resource type="Texture2D" uid="uid://iogdlcwton2i" path="res://mods-unpacked/kuuk-SmartThreadManager/textures/1x1.png" id="6_jbbn5"]
 [ext_resource type="FontVariation" uid="uid://o1lo3q4dynmn" path="res://themes/fonts/main.tres" id="8_mgogo"]
 [ext_resource type="Script" uid="uid://di7m75un41hcu" path="res://mods-unpacked/kuuk-SmartThreadManager/scripts/smart_resource_container.gd" id="9_jbbn5"]
 [ext_resource type="Script" uid="uid://427a4qx37b4k" path="res://mods-unpacked/kuuk-SmartThreadManager/scripts/toggle_desktop_button.gd" id="10_quws3"]
@@ -60,6 +60,9 @@ corner_radius_top_left = 16
 corner_radius_top_right = 16
 corner_radius_bottom_right = 16
 corner_radius_bottom_left = 16
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_xeqvc"]
+load_path = "res://.godot/imported/1x1.png-8394d628e214d66125fbcccb5af4482b.ctex"
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_h6jll"]
 bg_color = Color(0.08627451, 0.101960786, 0.13725491, 1)
@@ -116,14 +119,14 @@ PopupMenu/colors/font_disabled_color = Color(0.27058825, 0.33333334, 0.45882353,
 PopupMenu/colors/font_hover_color = Color(1, 0.52156866, 0, 1)
 PopupMenu/colors/font_separator_color = Color(1, 0.52156866, 0, 1)
 PopupMenu/colors/title_color = Color(0.8509804, 0.96862745, 1, 1)
-PopupMenu/icons/radio_checked = ExtResource("4_skhyp")
-PopupMenu/icons/radio_checked_disabled = ExtResource("4_skhyp")
-PopupMenu/icons/radio_unchecked = ExtResource("4_skhyp")
-PopupMenu/icons/radio_unchecked_disabled = ExtResource("4_skhyp")
+PopupMenu/icons/radio_checked = SubResource("CompressedTexture2D_xeqvc")
+PopupMenu/icons/radio_checked_disabled = SubResource("CompressedTexture2D_xeqvc")
+PopupMenu/icons/radio_unchecked = SubResource("CompressedTexture2D_xeqvc")
+PopupMenu/icons/radio_unchecked_disabled = SubResource("CompressedTexture2D_xeqvc")
 PopupMenu/styles/hover = SubResource("StyleBoxFlat_h6jll")
 PopupMenu/styles/panel = SubResource("StyleBoxFlat_y7j2n")
 stmOptionButton/base_type = &"OptionButton"
-stmOptionButton/icons/arrow = ExtResource("4_skhyp")
+stmOptionButton/icons/arrow = ExtResource("6_jbbn5")
 stmOptionButton/styles/focus = SubResource("StyleBoxFlat_jbbn5")
 stmOptionButton/styles/hover = SubResource("StyleBoxFlat_quws3")
 stmOptionButton/styles/normal = SubResource("StyleBoxFlat_1axda")
