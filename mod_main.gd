@@ -7,78 +7,71 @@ var mod_dir_path := ""
 var translations_dir_path := ""
 var windows_dir_path := ""
 
-func _init() -> void:    
+
+static func sanitize_semantics(in_array: Array)->Array:
+    var regex = RegEx.create_from_string("^([0-9]*)(\\.[0-9]*)*$")
+    return in_array.filter(func(item)->bool: return regex.search(item) != null)
+
+static func _get_compat_array(manifest: Dictionary)->Array:
+    return sanitize_semantics(manifest.get("extra", {})\
+        .get("compatible_game_version", "")\
+        .split(",", false))
+        
+static func is_good_version(manifest: Dictionary)->bool:
+    var project_ver = ProjectSettings.get_setting("application/config/version", "0.0.0")
+    return _get_compat_array(manifest).any(func(item: String)->bool: return item == project_ver)
+    
+
+func _init() -> void:
     mod_dir_path = ModLoaderMod.get_unpacked_dir().path_join(MOD_DIR)
     windows_dir_path = "../../"+mod_dir_path.trim_prefix("res://").path_join("scenes/windows")
     
-    _add_translations()
-    var version = JSON.parse_string(FileAccess.get_file_as_string(mod_dir_path+"/manifest.json")).version_number
-    if version == null: version = "unknown"
+    var manifest:Dictionary = JSON.parse_string(FileAccess.get_file_as_string(mod_dir_path+"/manifest.json"))
     
-    ModLoaderLog.success("Initialized, version: %s" % version, LOG_NAME)
+    if !is_good_version(manifest):
+        ModLoaderLog.warning("Game version is incompatible, yet allowed mod to load. Expect anything.", LOG_NAME)
+        
+    _add_translations()
+    ModLoaderLog.info("Translation test: %s" % tr("MODNAME_READY_TEXT"), LOG_NAME)    
+    
+    ModLoaderLog.success("Initialized, version: %s" % manifest.get("version_number", "0.0.0"), LOG_NAME)
 
 
 func _ready() -> void:
-    
+    ModLoaderLog.info("Post-init window registration started...", LOG_NAME)
     if !has_node("/root/Data"):
-        ModLoaderLog.error("No data singleton found!", LOG_NAME)
-        return
-    _add_to_data()
-    
-    ModLoaderLog.info(tr("MODNAME_READY_TEXT_GPU"), LOG_NAME)
+        ModLoaderLog.error("No data singleton found. Loading process stopped.", LOG_NAME)
+    else:
+        _add_to_data()
 
 func _add_translations() -> void:
     translations_dir_path = mod_dir_path.path_join("translations")
     for name in Array(DirAccess.get_files_at(translations_dir_path)).filter(func(s: String): return s.ends_with(".translation")):
-        ModLoaderMod.add_translation(translations_dir_path.path_join(name))        
-    
+        ModLoaderMod.add_translation(translations_dir_path.path_join(name))    
 
 func _add_to_data() -> void:
-    const entry_name = "smart_gpu_manager"
-    const node_name = "window_smart_gpu_manager"
+    var success: bool = true
     
-    if !Data.windows.has(entry_name):
-        Data.windows[entry_name] = {
-            "name": node_name,
-            "icon": "brain",
-            "description": "window_sgm_desc",
-            "scene": windows_dir_path.path_join(node_name),
-            "group": "",
-            "category": "gpu",
-            "sub_category": "management",
-            "level": 0,
-            "requirement": "research.gpu_manager",
-            "hidden": true,
-            "attributes":{
-                "limit": -1
-            },
-            "data": {},
-            "guide": node_name
-        }
-    else:
-        ModLoaderLog.warning("Data window entry exists already.", LOG_NAME)
-    if !Data.guides.has(node_name):
-        Data.guides[node_name] = {
-            "name": node_name,
-            "icon": "brain",
-            "type": 1,
-            "entries":[
-                {"text": "guide_"+node_name, "level": 0, "requirement": "research.gpu_manager"},
-                {"text": "guide_window_smart_thread_manager_chaining", "level": 0, "requirement": "research.gpu_manager"},
-                {"text": "guide_window_smart_thread_manager_ratio", "level": 0, "requirement": "research.gpu_manager"},
-                {"text": "guide_window_smart_thread_manager_demand", "level": 0, "requirement": "research.gpu_manager"},
-                {"text": "guide_window_smart_thread_manager_graph", "level": 0, "requirement": "research.gpu_manager"},
-            ]
-        }
-    else:
-        ModLoaderLog.warning("Data guide entry exists already.", LOG_NAME)
+    var data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(mod_dir_path.path_join("data/sgm_data.json")))
+    for key in data.keys():
+        for entry in data[key].keys():
+            if !Data[key].has(data[key][entry]):
+                Data[key][entry] = data[key][entry]
+            else:
+                ModLoaderLog.error("Data."+key+"."+entry+" already exists. Did not overwrite.", LOG_NAME)
+                success = false
+    if success:
+        if data.keys().has("windows"):
+            for entry in data.windows.keys():
+                if !Attributes.window_attributes.has(entry):
+                    Attributes.window_attributes[entry] = {}
+                    for attr_name: String in Data.windows[entry].attributes:
+                        Attributes.window_attributes[entry][attr_name] = Attribute.new(Data.windows[entry].attributes[attr_name])        
+        else:
+            ModLoaderLog.error("Attributes window entry exists already. Did not overwrite.", LOG_NAME)
+            success = false
     
-    if !Attributes.window_attributes.has(entry_name):
-        Attributes.window_attributes[entry_name] = {}
-        for attr_name: String in Data.windows[entry_name].attributes:
-            var attr_value = Data.windows[entry_name].attributes[attr_name]
-            Attributes.window_attributes[entry_name][attr_name] = Attribute.new(attr_value)
+    if success:
+        ModLoaderLog.success("Registered window", LOG_NAME)
     else:
-        ModLoaderLog.warning("Attributes window entry exists already", LOG_NAME)
-        
-    ModLoaderLog.info("Registered window", LOG_NAME)
+        ModLoaderLog.error("Error registering window", LOG_NAME)

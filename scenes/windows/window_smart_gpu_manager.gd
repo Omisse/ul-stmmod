@@ -43,21 +43,20 @@ var use_count: bool = false:
             return
         if "use_count" in output:
             output.use_count = value
-            
+
 func _ready() -> void:
     super()
     if "use_count" in output:
         output.use_count = use_count
     if "distribution_mode" in output:
-        output.distribution_mode = container_mode    
-    
-func process(delta: float) -> void :
+        output.distribution_mode = container_mode
+
+func tick(delta: float) -> void :
     output.count = input.count
     var progress_value = input.count / demand if !is_zero_approx(demand) else 0.0
     progress_bar.value = lerpf(progress_bar.min_value, progress_bar.max_value, progress_value)
     demand_label.text = Utils.print_string(input.count)+input.suffix+"/"+Utils.print_string(demand)+output.suffix
     percent_label.text = Utils.print_string(100.0*progress_value, false)+"%"
-    
     
 # Thats actually a thing about files with different types etc.
 func _on_input_resource_set() -> void :
@@ -66,14 +65,14 @@ func _on_input_resource_set() -> void :
 
 func export() -> Dictionary:
     var dict = super()
-    dict["filename"] = "../../".path_join(ModLoaderMod.get_mod_data("kuuk-SmartGPUManager").dir_path.trim_prefix("res://")).path_join("scenes/windows/window_smart_gpu_manager.tscn")
+    dict["filename"] = Data.windows[window].scene+".tscn"
     dict["container_mode"] = container_mode
     dict["use_count"] = use_count
     return dict
 
 func save() -> Dictionary:
     var dict = super()
-    dict["filename"] = "../../".path_join(ModLoaderMod.get_mod_data("kuuk-SmartGPUManager").dir_path.trim_prefix("res://")).path_join("scenes/windows/window_smart_gpu_manager.tscn")
+    dict["filename"] = Data.windows[window].scene+".tscn"
     dict["container_mode"] = container_mode
     dict["use_count"] = use_count
     return dict
@@ -88,5 +87,5 @@ func _on_use_count_button_toggled(toggled_on: bool) -> void:
     usecount_set_button_text(toggled_on)
 
 func usecount_set_button_text(toggle: bool) -> void:
-    use_count_button.text =  tr("stm_count_text") if toggle else tr("stm_cps_text")
+    use_count_button.text = tr("stm_count_text") if toggle else tr("stm_cps_text")
     

@@ -18,6 +18,9 @@ func _init() -> void :
     mouse_force_pass_scroll_events = false
     toggle_mode = true
 
+func _ready() -> void:
+    Signals.distance_level_set.connect(_on_distance_level_set)
+
 func _toggled(toggled_on: bool) -> void:
     if toggled_on:
         show_popup()
@@ -64,3 +67,7 @@ func _gui_input(event: InputEvent) -> void :
             handle_drag_input(event)
 
     Signals.unhandled_input.emit(event, global_position)
+
+
+func _on_distance_level_set(distance: int) -> void:
+    self.mouse_filter = MouseFilter.MOUSE_FILTER_IGNORE if distance >= 2 else MouseFilter.MOUSE_FILTER_STOP

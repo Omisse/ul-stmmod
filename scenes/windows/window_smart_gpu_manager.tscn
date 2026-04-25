@@ -1,15 +1,15 @@
-[gd_scene load_steps=22 format=3 uid="uid://wocawew6ut7h"]
+[gd_scene format=3 uid="uid://d22mop8voo5e"]
 
 [ext_resource type="PackedScene" uid="uid://b46qouyu3lx2m" path="res://scenes/windows/window_base.tscn" id="1_4h3qf"]
-[ext_resource type="Script" uid="uid://bws88iylbctea" path="res://mods-unpacked/kuuk-SmartGPUManager/scenes/windows/window_smart_gpu_manager.gd" id="2_seswn"]
+[ext_resource type="Script" path="res://mods-unpacked/kuuk-SmartThreadManager/scenes/windows/window_smart_thread_manager.gd" id="2_53iai"]
 [ext_resource type="Texture2D" uid="uid://mbrbl6fxx1" path="res://textures/icons/brain.png" id="3_jjcgv"]
 [ext_resource type="PackedScene" uid="uid://co5icrrrwscgg" path="res://scenes/input_container.tscn" id="4_2prua"]
-[ext_resource type="Texture2D" uid="uid://e07j7tof5wcq" path="res://mods-unpacked/kuuk-SmartGPUManager/textures/1x1.png" id="4_skhyp"]
-[ext_resource type="Script" uid="uid://ctoffc8p0clak" path="res://mods-unpacked/kuuk-SmartGPUManager/scripts/smart_resource_container.gd" id="5_3qqw1"]
+[ext_resource type="Texture2D" uid="uid://iogdlcwton2i" path="res://mods-unpacked/kuuk-SmartThreadManager/textures/1x1.png" id="5_lccun"]
 [ext_resource type="PackedScene" uid="uid://b4efojcll7i7" path="res://scenes/output_container.tscn" id="5_lcoeh"]
-[ext_resource type="Script" uid="uid://cu0x8obfs7ix0" path="res://mods-unpacked/kuuk-SmartGPUManager/scripts/option_desktop_button.gd" id="6_3qqw1"]
+[ext_resource type="Script" uid="uid://c2mt5wcwiuajf" path="res://mods-unpacked/kuuk-SmartThreadManager/scripts/option_desktop_button.gd" id="6_8ewyu"]
 [ext_resource type="FontVariation" uid="uid://o1lo3q4dynmn" path="res://themes/fonts/main.tres" id="8_mgogo"]
-[ext_resource type="Script" uid="uid://c0kmhhnn8wcs5" path="res://mods-unpacked/kuuk-SmartGPUManager/scripts/toggle_desktop_button.gd" id="10_xeqvc"]
+[ext_resource type="Script" uid="uid://c6qyiijmc8xut" path="res://mods-unpacked/kuuk-SmartThreadManager/scripts/smart_resource_container.gd" id="9_syjbi"]
+[ext_resource type="Script" uid="uid://kqg7wcf8rnd4" path="res://mods-unpacked/kuuk-SmartThreadManager/scripts/toggle_desktop_button.gd" id="10_ixjlo"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nuec8"]
 bg_color = Color(0.270588, 0.333333, 0.458824, 1)
@@ -60,6 +60,8 @@ corner_radius_top_left = 16
 corner_radius_top_right = 16
 corner_radius_bottom_right = 16
 corner_radius_bottom_left = 16
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_xeqvc"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_h6jll"]
 bg_color = Color(0.08627451, 0.101960786, 0.13725491, 1)
@@ -116,37 +118,37 @@ PopupMenu/colors/font_disabled_color = Color(0.27058825, 0.33333334, 0.45882353,
 PopupMenu/colors/font_hover_color = Color(1, 0.52156866, 0, 1)
 PopupMenu/colors/font_separator_color = Color(1, 0.52156866, 0, 1)
 PopupMenu/colors/title_color = Color(0.8509804, 0.96862745, 1, 1)
-PopupMenu/icons/radio_checked = ExtResource("4_skhyp")
-PopupMenu/icons/radio_checked_disabled = ExtResource("4_skhyp")
-PopupMenu/icons/radio_unchecked = ExtResource("4_skhyp")
-PopupMenu/icons/radio_unchecked_disabled = ExtResource("4_skhyp")
+PopupMenu/icons/radio_checked = SubResource("CompressedTexture2D_xeqvc")
+PopupMenu/icons/radio_checked_disabled = SubResource("CompressedTexture2D_xeqvc")
+PopupMenu/icons/radio_unchecked = SubResource("CompressedTexture2D_xeqvc")
+PopupMenu/icons/radio_unchecked_disabled = SubResource("CompressedTexture2D_xeqvc")
 PopupMenu/styles/hover = SubResource("StyleBoxFlat_h6jll")
 PopupMenu/styles/panel = SubResource("StyleBoxFlat_y7j2n")
 stmOptionButton/base_type = &"OptionButton"
-stmOptionButton/icons/arrow = ExtResource("4_skhyp")
+stmOptionButton/icons/arrow = ExtResource("5_lccun")
 stmOptionButton/styles/focus = SubResource("StyleBoxFlat_jbbn5")
 stmOptionButton/styles/hover = SubResource("StyleBoxFlat_quws3")
 stmOptionButton/styles/normal = SubResource("StyleBoxFlat_1axda")
 stmOptionButton/styles/pressed = SubResource("StyleBoxFlat_vv18v")
 
-[node name="WindowBase" instance=ExtResource("1_4h3qf")]
+[node name="WindowBase" unique_id=1571110532 instance=ExtResource("1_4h3qf")]
 offset_bottom = 50.0
-script = ExtResource("2_seswn")
+script = ExtResource("2_53iai")
 window = "smart_gpu_manager"
 
-[node name="Icon" parent="TitlePanel/TitleContainer" index="0"]
+[node name="Icon" parent="TitlePanel/TitleContainer" parent_id_path=PackedInt32Array(1176133871) index="0" unique_id=2015431448]
 texture = ExtResource("3_jjcgv")
 
-[node name="Title" parent="TitlePanel/TitleContainer" index="1"]
+[node name="Title" parent="TitlePanel/TitleContainer" parent_id_path=PackedInt32Array(1176133871) index="1" unique_id=570823129]
 text = "Auto Allocator"
 
-[node name="OptionButton" type="OptionButton" parent="." index="1"]
+[node name="OptionButton" type="OptionButton" parent="." index="1" unique_id=851881269]
 layout_mode = 2
 size_flags_vertical = 3
 theme = SubResource("Theme_6kkdg")
 theme_type_variation = &"stmOptionButton"
 alignment = 1
-selected = 0
+selected = 1
 fit_to_longest_item = false
 item_count = 3
 popup/item_0/text = "stmmode_ratio"
@@ -155,41 +157,42 @@ popup/item_1/text = "stmmode_demand"
 popup/item_1/id = 1
 popup/item_2/text = "stmmode_graph"
 popup/item_2/id = 2
-script = ExtResource("6_3qqw1")
+script = ExtResource("6_8ewyu")
 
-[node name="MainContainer" type="VBoxContainer" parent="PanelContainer" index="0"]
+[node name="MainContainer" type="VBoxContainer" parent="PanelContainer" parent_id_path=PackedInt32Array(1257840124) index="0" unique_id=631186733]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 10
 
-[node name="Input" parent="PanelContainer/MainContainer" index="0" node_paths=PackedStringArray("exporting") instance=ExtResource("4_2prua")]
+[node name="Input" parent="PanelContainer/MainContainer" index="0" unique_id=606513796 node_paths=PackedStringArray("exporting") instance=ExtResource("4_2prua")]
 layout_mode = 2
 default_resource = "gpu_speed"
 limit = -1.0
+force_resource = true
 exporting = [NodePath("../Output")]
 
-[node name="Progress" type="VBoxContainer" parent="PanelContainer/MainContainer" index="1"]
+[node name="Progress" type="VBoxContainer" parent="PanelContainer/MainContainer" index="1" unique_id=1262259528]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="ProgressContainer" type="HBoxContainer" parent="PanelContainer/MainContainer/Progress" index="0"]
+[node name="ProgressContainer" type="HBoxContainer" parent="PanelContainer/MainContainer/Progress" index="0" unique_id=1581790765]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="DemandsLabel" type="Label" parent="PanelContainer/MainContainer/Progress/ProgressContainer" index="0"]
+[node name="DemandsLabel" type="Label" parent="PanelContainer/MainContainer/Progress/ProgressContainer" index="0" unique_id=2096772911]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
 text = "0Hz"
 
-[node name="PercentLabel" type="Label" parent="PanelContainer/MainContainer/Progress/ProgressContainer" index="1"]
+[node name="PercentLabel" type="Label" parent="PanelContainer/MainContainer/Progress/ProgressContainer" index="1" unique_id=1437034188]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
 text = "0%"
 horizontal_alignment = 2
 
-[node name="ProgressBar" type="ProgressBar" parent="PanelContainer/MainContainer/Progress" index="1"]
+[node name="ProgressBar" type="ProgressBar" parent="PanelContainer/MainContainer/Progress" index="1" unique_id=209805205]
 custom_minimum_size = Vector2(0, 8)
 layout_mode = 2
 mouse_filter = 2
@@ -198,19 +201,20 @@ max_value = 1.0
 step = 0.001
 show_percentage = false
 
-[node name="Output" parent="PanelContainer/MainContainer" index="2" instance=ExtResource("5_lcoeh")]
+[node name="Output" parent="PanelContainer/MainContainer" index="2" unique_id=1698518635 instance=ExtResource("5_lcoeh")]
 layout_mode = 2
-script = ExtResource("5_3qqw1")
-use_count = false
-distribution_mode = 0
+script = ExtResource("9_syjbi")
+use_count = null
+distribution_mode = null
 default_resource = "gpu_speed"
 limit = -1.0
+force_resource = true
 
-[node name="UseCountButton" type="Button" parent="PanelContainer/MainContainer" index="3"]
+[node name="UseCountButton" type="Button" parent="PanelContainer/MainContainer" index="3" unique_id=597143111]
 layout_mode = 2
 theme_type_variation = &"ItemButton"
 text = "stm_cps_text"
-script = ExtResource("10_xeqvc")
+script = ExtResource("10_ixjlo")
 
 [connection signal="item_selected" from="OptionButton" to="." method="_on_option_button_item_selected"]
 [connection signal="resource_set" from="PanelContainer/MainContainer/Input" to="." method="_on_input_resource_set"]
