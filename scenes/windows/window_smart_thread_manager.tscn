@@ -1,15 +1,15 @@
-[gd_scene load_steps=23 format=3 uid="uid://wocawew6ut7h"]
+[gd_scene format=3 uid="uid://wocawew6ut7h"]
 
 [ext_resource type="PackedScene" uid="uid://b46qouyu3lx2m" path="res://scenes/windows/window_base.tscn" id="1_4h3qf"]
-[ext_resource type="Script" uid="uid://bsc4mrf5txn1s" path="res://mods-unpacked/kuuk-SmartThreadManager/scenes/windows/window_smart_thread_manager.gd" id="2_xeqvc"]
+[ext_resource type="Script" uid="uid://ijsqmx64mt43" path="res://mods-unpacked/kuuk-SmartThreadManager/scenes/windows/window_smart_thread_manager.gd" id="2_xeqvc"]
 [ext_resource type="Texture2D" uid="uid://mbrbl6fxx1" path="res://textures/icons/brain.png" id="3_jjcgv"]
 [ext_resource type="PackedScene" uid="uid://co5icrrrwscgg" path="res://scenes/input_container.tscn" id="4_2prua"]
 [ext_resource type="PackedScene" uid="uid://b4efojcll7i7" path="res://scenes/output_container.tscn" id="5_lcoeh"]
-[ext_resource type="Script" uid="uid://cbf3jbt2xle1n" path="res://mods-unpacked/kuuk-SmartThreadManager/scripts/option_desktop_button.gd" id="6_1lpg8"]
+[ext_resource type="Script" uid="uid://c2mt5wcwiuajf" path="res://mods-unpacked/kuuk-SmartThreadManager/scripts/option_desktop_button.gd" id="6_1lpg8"]
 [ext_resource type="Texture2D" uid="uid://iogdlcwton2i" path="res://mods-unpacked/kuuk-SmartThreadManager/textures/1x1.png" id="6_jbbn5"]
 [ext_resource type="FontVariation" uid="uid://o1lo3q4dynmn" path="res://themes/fonts/main.tres" id="8_mgogo"]
-[ext_resource type="Script" uid="uid://di7m75un41hcu" path="res://mods-unpacked/kuuk-SmartThreadManager/scripts/smart_resource_container.gd" id="9_jbbn5"]
-[ext_resource type="Script" uid="uid://427a4qx37b4k" path="res://mods-unpacked/kuuk-SmartThreadManager/scripts/toggle_desktop_button.gd" id="10_quws3"]
+[ext_resource type="Script" uid="uid://c6qyiijmc8xut" path="res://mods-unpacked/kuuk-SmartThreadManager/scripts/smart_resource_container.gd" id="9_jbbn5"]
+[ext_resource type="Script" uid="uid://kqg7wcf8rnd4" path="res://mods-unpacked/kuuk-SmartThreadManager/scripts/toggle_desktop_button.gd" id="10_quws3"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nuec8"]
 bg_color = Color(0.270588, 0.333333, 0.458824, 1)
@@ -62,7 +62,6 @@ corner_radius_bottom_right = 16
 corner_radius_bottom_left = 16
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_xeqvc"]
-load_path = "res://.godot/imported/1x1.png-8394d628e214d66125fbcccb5af4482b.ctex"
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_h6jll"]
 bg_color = Color(0.08627451, 0.101960786, 0.13725491, 1)
@@ -132,18 +131,18 @@ stmOptionButton/styles/hover = SubResource("StyleBoxFlat_quws3")
 stmOptionButton/styles/normal = SubResource("StyleBoxFlat_1axda")
 stmOptionButton/styles/pressed = SubResource("StyleBoxFlat_vv18v")
 
-[node name="WindowBase" instance=ExtResource("1_4h3qf")]
+[node name="WindowBase" unique_id=1571110532 instance=ExtResource("1_4h3qf")]
 offset_bottom = 50.0
 script = ExtResource("2_xeqvc")
 window = "smart_thread_manager"
 
-[node name="Icon" parent="TitlePanel/TitleContainer" index="0"]
+[node name="Icon" parent="TitlePanel/TitleContainer" parent_id_path=PackedInt32Array(1176133871) index="0" unique_id=2015431448]
 texture = ExtResource("3_jjcgv")
 
-[node name="Title" parent="TitlePanel/TitleContainer" index="1"]
+[node name="Title" parent="TitlePanel/TitleContainer" parent_id_path=PackedInt32Array(1176133871) index="1" unique_id=570823129]
 text = "Auto Allocator"
 
-[node name="OptionButton" type="OptionButton" parent="." index="1"]
+[node name="OptionButton" type="OptionButton" parent="." index="1" unique_id=851881269]
 layout_mode = 2
 size_flags_vertical = 3
 theme = SubResource("Theme_6kkdg")
@@ -160,39 +159,40 @@ popup/item_2/text = "stmmode_graph"
 popup/item_2/id = 2
 script = ExtResource("6_1lpg8")
 
-[node name="MainContainer" type="VBoxContainer" parent="PanelContainer" index="0"]
+[node name="MainContainer" type="VBoxContainer" parent="PanelContainer" parent_id_path=PackedInt32Array(1257840124) index="0" unique_id=631186733]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 10
 
-[node name="Input" parent="PanelContainer/MainContainer" index="0" node_paths=PackedStringArray("exporting") instance=ExtResource("4_2prua")]
+[node name="Input" parent="PanelContainer/MainContainer" index="0" unique_id=606513796 node_paths=PackedStringArray("exporting") instance=ExtResource("4_2prua")]
 layout_mode = 2
 default_resource = "clock_speed"
 limit = -1.0
+force_resource = true
 exporting = [NodePath("../Output")]
 
-[node name="Progress" type="VBoxContainer" parent="PanelContainer/MainContainer" index="1"]
+[node name="Progress" type="VBoxContainer" parent="PanelContainer/MainContainer" index="1" unique_id=1262259528]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="ProgressContainer" type="HBoxContainer" parent="PanelContainer/MainContainer/Progress" index="0"]
+[node name="ProgressContainer" type="HBoxContainer" parent="PanelContainer/MainContainer/Progress" index="0" unique_id=1581790765]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="DemandsLabel" type="Label" parent="PanelContainer/MainContainer/Progress/ProgressContainer" index="0"]
+[node name="DemandsLabel" type="Label" parent="PanelContainer/MainContainer/Progress/ProgressContainer" index="0" unique_id=2096772911]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
 text = "0Hz"
 
-[node name="PercentLabel" type="Label" parent="PanelContainer/MainContainer/Progress/ProgressContainer" index="1"]
+[node name="PercentLabel" type="Label" parent="PanelContainer/MainContainer/Progress/ProgressContainer" index="1" unique_id=1437034188]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
 text = "0%"
 horizontal_alignment = 2
 
-[node name="ProgressBar" type="ProgressBar" parent="PanelContainer/MainContainer/Progress" index="1"]
+[node name="ProgressBar" type="ProgressBar" parent="PanelContainer/MainContainer/Progress" index="1" unique_id=209805205]
 custom_minimum_size = Vector2(0, 8)
 layout_mode = 2
 mouse_filter = 2
@@ -201,7 +201,7 @@ max_value = 1.0
 step = 0.001
 show_percentage = false
 
-[node name="Output" parent="PanelContainer/MainContainer" index="2" instance=ExtResource("5_lcoeh")]
+[node name="Output" parent="PanelContainer/MainContainer" index="2" unique_id=1698518635 instance=ExtResource("5_lcoeh")]
 layout_mode = 2
 script = ExtResource("9_jbbn5")
 use_count = false
@@ -209,7 +209,7 @@ distribution_mode = 0
 default_resource = "clock_speed"
 limit = -1.0
 
-[node name="UseCountButton" type="Button" parent="PanelContainer/MainContainer" index="3"]
+[node name="UseCountButton" type="Button" parent="PanelContainer/MainContainer" index="3" unique_id=597143111]
 layout_mode = 2
 theme_type_variation = &"ItemButton"
 text = "stm_cps_text"

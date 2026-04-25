@@ -17,16 +17,14 @@ var icdata: Dictionary[String, STMContainerData]
 
 func _init(window: WindowBase) -> void:
     self.window = window
-    var containers = window.containers\
-            .filter(func(c): return c.is_in_group("input"))
-    for container in containers:
+    for container:ResourceContainer in window.containers.filter(func(c): return c.is_in_group("input")):
         inputs.set(container.id, container)
     
     set_containers()
     
     if "demand" in window:
         role = STMWindowRoles.STM_MANAGER
-    elif "goal" in window && !dependent.is_empty():
+    elif window.has_method("get_goal") && !dependent.is_empty():
         role = STMWindowRoles.STM_CONSUMER
     elif window.is_in_group("window"):
         role = STMWindowRoles.STM_STORAGE
@@ -79,7 +77,11 @@ func get_min_count() -> float:
     
 
 func get_goal() -> float:
-    return window.goal if role == STMWindowRoles.STM_CONSUMER else 0.0
+    ##consumer role already assumes we have get_goal()
+    if role == STMWindowRoles.STM_CONSUMER:
+        return window.get_goal()
+    else:
+        return 0.0
 
 func update():
     for cd in icdata.values():

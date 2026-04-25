@@ -1,5 +1,8 @@
 extends DesktopButton
 
+func _ready() -> void:
+    Signals.distance_level_set.connect(_on_distance_level_set)
+
 func handle_press_event(event: InputEvent) -> void:
     if event.is_released():
         if !dragged and (click_disabled or !disabled) and !cancel_press:
@@ -24,3 +27,6 @@ func _gui_input(event: InputEvent) -> void :
             handle_drag_input(event)
 
     Signals.unhandled_input.emit(event, global_position)
+
+func _on_distance_level_set(distance: int) -> void:
+    self.mouse_filter = MouseFilter.MOUSE_FILTER_IGNORE if distance >= 2 else MouseFilter.MOUSE_FILTER_STOP

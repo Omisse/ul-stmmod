@@ -13,6 +13,10 @@ const STMUtils = preload("res://mods-unpacked/kuuk-SmartThreadManager/scripts/gl
         distribution_mode = value
         data_changed = true
 
+
+
+
+
 var demand: float = 0.0
 var graph = null
 
@@ -26,12 +30,8 @@ var state:Dictionary = {
 
 var state_keep = ["wdata"]        
 var data_changed = false
-
-
         
 var distribution_callable: Callable
-
-
 
 enum STMContainerMode {
     CM_RATIO  =0,
