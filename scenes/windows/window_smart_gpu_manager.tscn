@@ -1,10 +1,10 @@
 [gd_scene format=3 uid="uid://d22mop8voo5e"]
 
 [ext_resource type="PackedScene" uid="uid://b46qouyu3lx2m" path="res://scenes/windows/window_base.tscn" id="1_4h3qf"]
-[ext_resource type="Script" uid="uid://bahyc6kvc37vk" path="res://mods-unpacked/kuuk-SmartGPUManager/scenes/windows/window_smart_gpu_manager.gd" id="2_53iai"]
+[ext_resource type="Script" uid="uid://i56nd3chegw" path="res://mods-unpacked/kuuk-SmartGPUManager/scenes/windows/window_smart_gpu_manager.gd" id="2_53iai"]
 [ext_resource type="Texture2D" uid="uid://mbrbl6fxx1" path="res://textures/icons/brain.png" id="3_jjcgv"]
 [ext_resource type="PackedScene" uid="uid://co5icrrrwscgg" path="res://scenes/input_container.tscn" id="4_2prua"]
-[ext_resource type="Texture2D" uid="uid://iogdlcwton2i" path="res://mods-unpacked/kuuk-SmartGPUManager/textures/1x1.png" id="5_lccun"]
+[ext_resource type="Texture2D" uid="uid://beh5em3qc3l4m" path="res://mods-unpacked/kuuk-SmartGPUManager/textures/1x1.png" id="5_lccun"]
 [ext_resource type="PackedScene" uid="uid://b4efojcll7i7" path="res://scenes/output_container.tscn" id="5_lcoeh"]
 [ext_resource type="Script" uid="uid://c2mt5wcwiuajf" path="res://mods-unpacked/kuuk-SmartGPUManager/scripts/option_desktop_button.gd" id="6_8ewyu"]
 [ext_resource type="FontVariation" uid="uid://o1lo3q4dynmn" path="res://themes/fonts/main.tres" id="8_mgogo"]
@@ -136,10 +136,10 @@ offset_bottom = 50.0
 script = ExtResource("2_53iai")
 window = "smart_gpu_manager"
 
-[node name="Icon" parent="TitlePanel/TitleContainer" parent_id_path=PackedInt32Array(1176133871) index="0" unique_id=2015431448]
+[node name="Icon" parent="TitlePanel/TitleContainer" parent_id_path=PackedInt32Array(1034253717) index="0" unique_id=1179022112]
 texture = ExtResource("3_jjcgv")
 
-[node name="Title" parent="TitlePanel/TitleContainer" parent_id_path=PackedInt32Array(1176133871) index="1" unique_id=570823129]
+[node name="Title" parent="TitlePanel/TitleContainer" parent_id_path=PackedInt32Array(1034253717) index="1" unique_id=1490357970]
 text = "Auto Allocator"
 
 [node name="OptionButton" type="OptionButton" parent="." index="1" unique_id=851881269]
@@ -159,7 +159,7 @@ popup/item_2/text = "stmmode_graph"
 popup/item_2/id = 2
 script = ExtResource("6_8ewyu")
 
-[node name="MainContainer" type="VBoxContainer" parent="PanelContainer" parent_id_path=PackedInt32Array(1257840124) index="0" unique_id=631186733]
+[node name="MainContainer" type="VBoxContainer" parent="PanelContainer" parent_id_path=PackedInt32Array(562283249) index="0" unique_id=631186733]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 10
@@ -204,8 +204,8 @@ show_percentage = false
 [node name="Output" parent="PanelContainer/MainContainer" index="2" unique_id=1698518635 instance=ExtResource("5_lcoeh")]
 layout_mode = 2
 script = ExtResource("9_syjbi")
-use_count = null
-distribution_mode = null
+use_count = false
+distribution_mode = 0
 default_resource = "gpu_speed"
 limit = -1.0
 force_resource = true
