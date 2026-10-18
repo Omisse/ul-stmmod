@@ -10,13 +10,13 @@ var windows_dir_path := ""
 var instances: Dictionary
 
 static func sanitize_semantics(in_array: Array)->Array:
-	var regex = RegEx.create_from_string("^([0-9]*)(\\.[0-9]*)*$")
+	var regex = RegEx.create_from_string("([0-9]*)(\\.[0-9]*)*")
 	return in_array.filter(func(item)->bool: return regex.search(item) != null)
 
 static func _get_compat_array(manifest: Dictionary)->Array:
 	return sanitize_semantics(manifest.get("extra", {})\
-		.get("compatible_game_version", "")\
-		.split(",", false))
+		.get("godot", {})\
+		.get("compatible_game_version", []))
 		
 static func is_good_version(manifest: Dictionary)->bool:
 	var project_ver = ProjectSettings.get_setting("application/config/version", "0.0.0")
