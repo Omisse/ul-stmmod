@@ -1,5 +1,5 @@
 # SmartThreadManager
-> Mod for [Upload Labs](https://steamcommunity.com/app/3606890) game
+> Mod for [Upload Labs](https://store.steampowered.com/app/3606890/Upload_Labs/) game
 
 ![Icon](icon.png)
 
